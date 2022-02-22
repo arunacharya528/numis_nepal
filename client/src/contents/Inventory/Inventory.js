@@ -96,6 +96,29 @@ export const Inventory = () => {
 
         return <span className={"badge badge-" + bootstrapColor(value)}>{value}</span>
     }
+    const getFormattedDate = (date) => {
+        const now = Date.parse(new Date());
+        const dateTimestamp = Date.parse(new Date(date));
+
+        const timeDifference = now - dateTimestamp
+
+        if (timeDifference > (5 * 24 * 60 * 60 * 1000)) {
+            var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            var date = new Date(date);
+            return (date.toLocaleDateString("en-US", options));
+        }
+        else if (timeDifference > (24 * 60 * 60 * 1000)) {
+            return Math.floor(timeDifference / (24 * 60 * 60 * 1000)) + "d"
+        }
+        else if (timeDifference > (60 * 60 * 1000)) {
+            return Math.floor(timeDifference / (60 * 60 * 1000)) + "h"
+        }
+        else if (timeDifference > (60 * 1000)) {
+            return Math.floor(timeDifference / (60 * 1000)) + "m"
+        } else if (timeDifference < (60 * 1000)) {
+            return "Just now"
+        }
+    }
     const columns = useMemo(
         () => [
             {
@@ -130,6 +153,12 @@ export const Inventory = () => {
                         Header: "Type",
                         accessor: "type",
                         Cell: ({ cell: { value } }) => <Type value={value} />
+
+                    },
+                    {
+                        Header: "Created",
+                        accessor: "date",
+                        Cell: ({ cell: { value } }) => <>{getFormattedDate(value)}</>
 
                     },
                     {
@@ -197,6 +226,7 @@ export const Inventory = () => {
             {!query.status && !query.type ? <b>All Items</b> : ""}
         </>
     }
+
     return (
         <>
             <Breadcrumb title={"Inventory"} />
@@ -239,7 +269,7 @@ export const Inventory = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="card-body">
+                            <div className="card-body table-responsive">
                                 <Table columns={columns} data={inventory} filter={{ data: "collectible[0].description", placeholder: "Search by collection description" }} />
                             </div>
                         </div>
