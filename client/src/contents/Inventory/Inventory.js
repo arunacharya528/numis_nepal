@@ -11,11 +11,26 @@ export const Inventory = () => {
     const [inventory, setInventory] = useState([]);
     const [clients, setClients] = useState([]);
     const [collectibles, setCollectibles] = useState([]);
+    const [query, setQuery] = useState({ status: undefined, type: undefined });
 
+
+    const getURL = () => {
+        var urlQuery = "?"
+        if (query.status) {
+            urlQuery += `status=${query.status}`
+        }
+        if (query.type) {
+            urlQuery += `&type=${query.type}`
+        }
+        const url = `${uri}/inventory/${urlQuery}`;
+        return url;
+    }
     useEffect(() => {
         const fetchInventory = async () => {
             try {
-                const response = await fetch(`${uri}/inventory`);
+                // const url = getURL();
+                // console.log(url)
+                const response = await fetch(getURL());
                 const json = await response.json();
                 setInventory(json);
                 setInventoryCount(json.length);
@@ -48,7 +63,7 @@ export const Inventory = () => {
         fetchInventory();
         fetchClients();
         fetchCollectibles();
-    }, [inventoryCount]);
+    }, [inventoryCount, query]);
 
     const Status = ({ value }) => {
         const bootstrapColor = (value) => {
@@ -158,6 +173,30 @@ export const Inventory = () => {
             })
             .catch(error => console.log('error', error));
     }
+
+    const handleSearchQuery = (e) => {
+        var value = e.target.value;
+
+        if (value === 'booked' || value === 'paid' || value === 'delivered') {
+            value = query.status === value ? undefined : value
+            setQuery({ status: value, type: query.type })
+        } else if (value === 'brought' || value === 'sold') {
+            value = query.type === value ? undefined : value
+            setQuery({ status: query.status, type: value })
+        } else if (value = "default") {
+            setQuery({ status: undefined, type: undefined })
+        }
+    }
+
+    const listingTitle = () => {
+        return <>
+            {query.status || query.type ? <>Items where</> : ""}
+            {query.status ? <> status is <b>{query.status}</b></> : ""}
+            {query.status && query.type ? " and " : ''}
+            {query.type ? <> type is <b>{query.type}</b></> : ""}
+            {!query.status && !query.type ? <b>All Items</b> : ""}
+        </>
+    }
     return (
         <>
             <Breadcrumb title={"Inventory"} />
@@ -185,6 +224,21 @@ export const Inventory = () => {
                         </div>
 
                         <div className="card">
+                            <div className="card-header d-flex justify-content-between align-items-center">
+                                <h3 class="card-title">{listingTitle()}</h3>
+                                <div className="mt-3">
+                                    <button onClick={handleSearchQuery} value="default" className={"btn btn-sm btn-secondary mr-2 " + (!query.status && !query.type ? "active" : "")}>Default</button>
+                                    <div className="btn-group mr-2">
+                                        <button onClick={handleSearchQuery} value="booked" className={"btn btn-sm btn-danger " + (query.status === "booked" ? "active" : "")}>Booked</button>
+                                        <button onClick={handleSearchQuery} value="paid" className={"btn btn-sm btn-primary " + (query.status === "paid" ? "active" : "")}>Paid</button>
+                                        <button onClick={handleSearchQuery} value="delivered" className={"btn btn-sm btn-success " + (query.status === "delivered" ? "active" : "")}>Delivered</button>
+                                    </div>
+                                    <div className="btn-group mr-2">
+                                        <button onClick={handleSearchQuery} value="brought" className={"btn btn-sm btn-warning " + (query.type === "brought" ? "active" : "")}>Brought</button>
+                                        <button onClick={handleSearchQuery} value="sold" className={"btn btn-sm btn-success " + (query.type === "sold" ? "active" : "")}>Sold</button>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="card-body">
                                 <Table columns={columns} data={inventory} filter={{ data: "collectible[0].description", placeholder: "Search by collection description" }} />
                             </div>

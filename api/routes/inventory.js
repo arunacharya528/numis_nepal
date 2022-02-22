@@ -10,28 +10,49 @@ const Inventory = mongoose.model("Inventory");
 
 var ObjectID = require('mongodb').ObjectID;
 const { ObjectId } = require('mongodb');
+const { query } = require('express');
 
 router.get("/inventory", (req, res, next) => {
+
+    var searchClause = [];
+    if (req.query.status) {
+        searchClause = [{ 'status': req.query.status }]
+    }
+    if (req.query.type) {
+        searchClause = [{ 'type': req.query.type }];
+    }
+    if (req.query.status && req.query.type) {
+        searchClause = [{ 'status': req.query.status }, { 'type': req.query.type }];
+    }
+    if (!req.query.status && !req.query.type) {
+
+        searchClause = [{}];
+    }
+    var query = [{
+        '$lookup': {
+            'from': 'clients',
+            'localField': 'client',
+            'foreignField': '_id',
+            'as': 'client'
+        }
+    }, {
+        '$lookup': {
+            'from': 'collectibles',
+            'localField': 'collectible',
+            'foreignField': '_id',
+            'as': 'collectible'
+        }
+    }, {
+        '$match': {
+            "$and": searchClause
+        }
+    }, {
+        "$sort": { "date": -1 }
+    }];
+
+
     Inventory
-        .aggregate([
-            {
-                '$lookup': {
-                    'from': 'clients',
-                    'localField': 'client',
-                    'foreignField': '_id',
-                    'as': 'client'
-                }
-            }, {
-                '$lookup': {
-                    'from': 'collectibles',
-                    'localField': 'collectible',
-                    'foreignField': '_id',
-                    'as': 'collectible'
-                }
-            }, {
-                "$sort": { "date": -1 }
-            }
-        ])
+        .aggregate(query)
         .then(result => {
             res.status(200).send(result)
         })
@@ -61,27 +82,25 @@ router.post("/inventory", (req, res, next) => {
 
 router.get("/inventory/:inventory_id", (req, res, next) => {
     Inventory
-        .aggregate([
-            {
-                '$match': {
-                    '_id': new ObjectId(req.params.inventory_id)
-                }
-            }, {
-                '$lookup': {
-                    'from': 'clients',
-                    'localField': 'client',
-                    'foreignField': '_id',
-                    'as': 'client'
-                }
-            }, {
-                '$lookup': {
-                    'from': 'collectibles',
-                    'localField': 'collectible',
-                    'foreignField': '_id',
-                    'as': 'collectible'
-                }
+        .aggregate([{
+            '$match': {
+                '_id': new ObjectId(req.params.inventory_id)
             }
-        ])
+        }, {
+            '$lookup': {
+                'from': 'clients',
+                'localField': 'client',
+                'foreignField': '_id',
+                'as': 'client'
+            }
+        }, {
+            '$lookup': {
+                'from': 'collectibles',
+                'localField': 'collectible',
+                'foreignField': '_id',
+                'as': 'collectible'
+            }
+        }])
         .then(result => {
             res.status(200).send(result)
         })
