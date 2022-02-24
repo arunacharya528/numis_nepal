@@ -1,7 +1,7 @@
 import { Breadcrumb } from "../../components/Breadcrumb";
 import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
-import { Add } from "./Add";
+import { Add, BoughtForm, SoldForm } from "./Add";
 
 
 export const Inventory = () => {
@@ -12,7 +12,7 @@ export const Inventory = () => {
     const [clients, setClients] = useState([]);
     const [collectibles, setCollectibles] = useState([]);
     const [query, setQuery] = useState({ status: undefined, type: undefined });
-
+    const [boughtInventory, setBoughtInventory] = useState([]);
 
     const getURL = () => {
         var urlQuery = "?"
@@ -25,45 +25,72 @@ export const Inventory = () => {
         const url = `${uri}/inventory/${urlQuery}`;
         return url;
     }
+    const fetchInventory = () => {
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(getURL(), requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                setInventory(result)
+                setInventoryCount(inventory.length)
+            })
+            .catch(error => console.log('error', error));
+    }
+
+    const fetchBoughtInventory = () => {
+
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(`${uri}/inventory?type=bought&status=delivered`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                setBoughtInventory(result)
+            })
+            .catch(error => console.log('error', error));
+    }
+
+    const fetchClients = () => {
+
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(`${uri}/client`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                setClients(result)
+            })
+            .catch(error => console.log('error', error));
+    }
+    const fetchCollectibles = () => {
+
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(`${uri}/collectible`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                setCollectibles(result)
+            })
+            .catch(error => console.log('error', error));
+    }
+
     useEffect(() => {
-        const fetchInventory = async () => {
-            try {
-                // const url = getURL();
-                // console.log(url)
-                const response = await fetch(getURL());
-                const json = await response.json();
-                setInventory(json);
-                setInventoryCount(json.length);
-            } catch (error) {
-                console.log("error", error);
-            }
-        }
-
-        const fetchClients = async () => {
-            try {
-                const response = await fetch(`${uri}/client`);
-                const json = await response.json();
-
-                setClients(json);
-            } catch (error) {
-                console.log("error", error);
-            }
-        }
-
-        const fetchCollectibles = async () => {
-            try {
-                const response = await fetch(`${uri}/collectible`);
-                const json = await response.json();
-                setCollectibles(json);
-            } catch (error) {
-                console.log("error", error);
-            }
-        }
-
+        fetchBoughtInventory();
         fetchInventory();
         fetchClients();
         fetchCollectibles();
     }, [inventoryCount, query]);
+
 
     const Status = ({ value }) => {
         const bootstrapColor = (value) => {
@@ -85,7 +112,7 @@ export const Inventory = () => {
     const Type = ({ value }) => {
         const bootstrapColor = (value) => {
             switch (value) {
-                case "brought":
+                case "bought":
                     return "warning";
                 case "sold":
                     return "success";
@@ -175,18 +202,18 @@ export const Inventory = () => {
         []
     );
 
-    const handleInsertion = (data) => {
+    const insertIntoInventory = (inventory) => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
         var urlencoded = new URLSearchParams();
-        urlencoded.append("buyingPrice", data.buyingPrice);
-        urlencoded.append("sellingPrice", data.sellingPrice);
-        urlencoded.append("quantity", data.quantity);
-        urlencoded.append("status", data.status);
-        urlencoded.append("collectibleId", data.collectibleId);
-        urlencoded.append("clientId", data.clientId);
-        urlencoded.append("type", data.type);
+        urlencoded.append("buyingPrice", inventory.buyingPrice);
+        urlencoded.append("sellingPrice", inventory.sellingPrice);
+        urlencoded.append("quantity", inventory.quantity);
+        urlencoded.append("status", inventory.status);
+        urlencoded.append("collectibleId", inventory.collectibleId);
+        urlencoded.append("clientId", inventory.clientId);
+        urlencoded.append("type", inventory.type);
 
         var requestOptions = {
             method: 'POST',
@@ -203,13 +230,35 @@ export const Inventory = () => {
             .catch(error => console.log('error', error));
     }
 
+    const handleSoldStatus = (data) => {
+
+        data.collectible.map((row) => {
+            // console.log(row)
+            const inventory = {
+                clientId: data.clientId,
+                status: data.status,
+                type: data.type,
+                buyingPrice: row.buyingPrice,
+                sellingPrice: row.sellingPrice,
+                collectibleId: row.collectibleId,
+                quantity: row.quantity,
+            };
+            insertIntoInventory(inventory);
+            // console.log(inventory);
+        })
+    }
+
+    const handleBoughtStatus = (data) => {
+        insertIntoInventory(data);
+    }
+
     const handleSearchQuery = (e) => {
         var value = e.target.value;
 
         if (value === 'booked' || value === 'paid' || value === 'delivered') {
             value = query.status === value ? undefined : value
             setQuery({ status: value, type: query.type })
-        } else if (value === 'brought' || value === 'sold') {
+        } else if (value === 'bought' || value === 'sold') {
             value = query.type === value ? undefined : value
             setQuery({ status: query.status, type: value })
         } else if (value = "default") {
@@ -233,21 +282,42 @@ export const Inventory = () => {
             <section className="content">
                 <div className="row">
                     <div className="col-12">
-                        <div className="accordion" id="accordionExample">
+                        <div className="accordion" id="">
                             <div className="card">
                                 <div className="card-header p-0" id="headingOne">
                                     <h2 className="mb-0">
-                                        <button className="btn btn-primary btn-block text-left" data-toggle="collapse" data-target="#addFormCollapse">
+                                        <button className="btn btn-primary btn-block text-left" data-toggle="collapse" data-target="#boughtFormCollapse">
                                             <i className="fa fa-plus" aria-hidden="true"></i>
                                             {" "}
-                                            Add brought item
+                                            Add bought item
                                         </button>
                                     </h2>
                                 </div>
 
-                                <div id="addFormCollapse" className="collapse">
+                                <div id="boughtFormCollapse" className="collapse">
                                     <div className="card-body">
-                                        <Add handleSubmission={handleInsertion} clientList={clients} collectibleList={collectibles} />
+                                        <BoughtForm handleSubmission={handleBoughtStatus} clientList={clients} collectibleList={collectibles} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="accordion" id="">
+                            <div className="card">
+                                <div className="card-header p-0" id="headingOne">
+                                    <h2 className="mb-0">
+                                        <button className="btn btn-primary btn-block text-left" data-toggle="collapse" data-target="#soldFormCollapse">
+                                            <i className="fa fa-plus" aria-hidden="true"></i>
+                                            {" "}
+                                            Add sold item
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="soldFormCollapse" className="collapse">
+                                    <div className="card-body">
+                                        <SoldForm clientList={clients} boughtInventory={boughtInventory} handleSubmission={handleSoldStatus} />
+
                                     </div>
                                 </div>
                             </div>
@@ -264,7 +334,7 @@ export const Inventory = () => {
                                         <button onClick={handleSearchQuery} value="delivered" className={"btn btn-sm btn-success " + (query.status === "delivered" ? "active" : "")}>Delivered</button>
                                     </div>
                                     <div className="btn-group mr-2">
-                                        <button onClick={handleSearchQuery} value="brought" className={"btn btn-sm btn-warning " + (query.type === "brought" ? "active" : "")}>Brought</button>
+                                        <button onClick={handleSearchQuery} value="bought" className={"btn btn-sm btn-warning " + (query.type === "bought" ? "active" : "")}>Bought</button>
                                         <button onClick={handleSearchQuery} value="sold" className={"btn btn-sm btn-success " + (query.type === "sold" ? "active" : "")}>Sold</button>
                                     </div>
                                 </div>

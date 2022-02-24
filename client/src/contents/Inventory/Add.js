@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const Add = ({ handleSubmission, clientList, collectibleList }) => {
+export const BoughtForm = ({ handleSubmission, clientList, collectibleList }) => {
     const [collectibleId, setCollectibleId] = useState("");
     const [buyingPrice, setBuyingPrice] = useState(0);
     const [sellingPrice, setSellingPrice] = useState(0);
@@ -131,5 +131,169 @@ export const Add = ({ handleSubmission, clientList, collectibleList }) => {
             <button type="submit" className="btn btn-primary">Add </button>
 
         </form>
+    );
+}
+
+export const SoldForm = ({ handleSubmission, clientList, boughtInventory }) => {
+
+    const [clientId, setClientId] = useState("");
+    const [status, setStatus] = useState("booked");
+    const type = "sold";
+    const statusList = ["booked", "paid", "delivered"]
+    const [collectibleList, setCollectibleList] = useState([]);
+
+    const [collectible, setCollectible] = useState({ id: undefined, name: undefined });
+    const [buyingPrice, setBuyingPrice] = useState(0);
+    const [sellingPrice, setSellingPrice] = useState(0);
+    const [quantity, setQuantity] = useState(0);
+
+    const [maxBuyingPrice, setMaxBuyingPrice] = useState(0);
+    const [maxSellingPrice, setMaxSellingPrice] = useState(0);
+    const [maxQuantity, setMaxQuantity] = useState(0);
+
+
+    const setToDefeault = () => {
+        setCollectible({})
+        setBuyingPrice(0)
+        setSellingPrice(0)
+        setQuantity(0)
+        setClientId("")
+        setStatus("booked")
+    }
+
+    const submitForm = (e) => {
+        e.preventDefault();
+
+        const collectible = collectibleList.map((collectible) => {
+            return {
+                buyingPrice: collectible.buyingPrice,
+                sellingPrice: collectible.sellingPrice,
+                collectibleId: collectible.collectible.id,
+                quantity: collectible.quantity
+            }
+        })
+
+        handleSubmission({ clientId, status, type, collectible })
+        setToDefeault();
+    }
+
+    const defaultCollectibleGroup = () => {
+        setCollectible({})
+        setBuyingPrice(0);
+        setSellingPrice(0);
+        setQuantity(0);
+
+    }
+    const removeChild = (childIndex) => {
+        setCollectibleList(collectibleList.filter((collectible, index) => {
+            return index != childIndex;
+        }))
+    }
+
+    const handleCollectibleAddition = () => {
+        setCollectibleList([...collectibleList, ...[{ "collectible": { "id": collectible.id, "name": collectible.name }, buyingPrice, sellingPrice, quantity }]])
+        defaultCollectibleGroup();
+    }
+    return (
+        <form onSubmit={submitForm}>
+            <table className="table">
+                <tbody>
+                    <tr>
+                        <th>Client</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <select className="form-control" id="client" onChange={e => setClientId(e.target.value)}>
+                                <option hidden>Select a client</option>
+                                {clientList.map((client, index) =>
+                                    <option key={index} value={client._id} active={client._id === clientId ? true : undefined}>{client.name}</option>)}
+                            </select>
+                        </td>
+                        <td>
+                            <select onChange={e => setStatus(e.target.value)}>
+                                {statusList.map((status, index) => <option>{status}</option>)}
+                            </select>
+                        </td>
+                        <td>{type}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+            <table className="table">
+                <tbody>
+                    <tr>
+                        <th>Index</th>
+                        <th>Collectible</th>
+                        <th>Buying Price</th>
+                        <th>Selling Price</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                    {
+                        collectibleList.map((collectible, index) =>
+                            <tr key={index}>
+                                <th>{index + 1}</th>
+                                <td>{collectible.collectible.name}</td>
+                                <td>{collectible.buyingPrice}</td>
+                                <td>{collectible.sellingPrice}</td>
+                                <td>{collectible.quantity}</td>
+                                <td>
+                                    <button type="button" class="close mx-2" onClick={e => removeChild(index)}>
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        )
+                    }
+                    <tr>
+                        <th>{collectibleList.length + 1}</th>
+                        <td>
+                            <select className="form-control" id="collectible" onChange={e => {
+                                var optionElement = e.target.childNodes[e.target.selectedIndex]
+                                const buyingPrice = optionElement.getAttribute('buyingprice');
+                                setBuyingPrice(buyingPrice);
+                                setMaxBuyingPrice(buyingPrice);
+
+                                const sellingPrice = optionElement.getAttribute('sellingprice');
+                                setSellingPrice(sellingPrice);
+                                setMaxSellingPrice(sellingPrice);
+
+                                const quantity = optionElement.getAttribute('quantity');
+                                setQuantity(quantity);
+                                setMaxQuantity(quantity);
+
+                                setCollectible({ id: e.target.value, name: optionElement.innerText })
+
+                            }}>
+                                <option hidden selected>Select a collectible</option>
+                                {boughtInventory.map((inventory, index) =>
+                                    <option key={index} value={inventory.collectible[0]._id} buyingprice={inventory.buyingPrice} sellingprice={inventory.sellingPrice} quantity={inventory.quantity}>{inventory.collectible[0].description} ({inventory.collectible[0].quality}) </option>
+                                )}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" className="form-control" id="buying_price" placeholder="Enter buying price" onChange={e => setBuyingPrice(e.target.value)} value={buyingPrice} min="0" max={maxBuyingPrice} />
+                        </td>
+                        <td>
+                            <input type="number" className="form-control" id="selling_price" placeholder="Enter selling price" onChange={e => setSellingPrice(e.target.value)} value={sellingPrice} min="0" max={maxSellingPrice} />
+                        </td>
+                        <td>
+                            <input type="number" className="form-control" id="quantity" placeholder="Enter quantity" onChange={e => setQuantity(e.target.value)} value={quantity} min="0" max={maxQuantity} />
+                        </td>
+                        <td>
+                            <div className="btn btn-sm btn-primary" onClick={handleCollectibleAddition}>Save</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <button type="submit" className="btn btn-primary">Add </button>
+
+        </form >
     );
 }
