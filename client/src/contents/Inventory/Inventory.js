@@ -2,6 +2,9 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
 import { Add, BoughtForm, SoldForm } from "./Add";
+// import { ToastContainer, toast } from 'react-toastify';
+import { toast } from "wc-toast"
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export const Inventory = () => {
@@ -226,14 +229,17 @@ export const Inventory = () => {
             .then(response => response.text())
             .then(result => {
                 setInventoryCount(inventoryCount + 1);
+                toast.success("Inserted 1 row into inventory")
             })
-            .catch(error => console.log('error', error));
+            .catch(err => {
+                console.log('error', err)
+                toast.error(err);
+            });
     }
 
     const handleSoldStatus = (data) => {
 
         data.collectible.map((row) => {
-            // console.log(row)
             const inventory = {
                 clientId: data.clientId,
                 status: data.status,
@@ -276,8 +282,12 @@ export const Inventory = () => {
         </>
     }
 
+    let container;
+
     return (
         <>
+            <wc-toast className="top-right"></wc-toast>
+            {/* <ToastContainer ref={(ref) => (container = ref)} className="toast-top-right" /> */}
             <Breadcrumb title={"Inventory"} />
             <section className="content">
                 <div className="row">

@@ -5,18 +5,19 @@ export const Sidebar = () => {
     const location = useLocation();
 
     return (<aside className="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="index3.html" className="brand-link">
-            <span className="brand-text font-weight-light">AdminLTE 3</span>
-        </a>
+        <Link to="/" className="brand-link">
+            <img src="https://dummyimage.com/400x400/ff/000000&text=NN" className="brand-image logo" style={{ "borderRadius": "50%" }} />
+            <span className="brand-text font-weight-light">Numis Nepal</span>
+        </Link>
 
         <div className="sidebar">
-            <div className="user-panel mt-3 pb-3 mb-3 d-flex">
+            {/* <div className="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div className="image">
                 </div>
                 <div className="info">
                     <a href="#" className="d-block">Alexander Pierce</a>
                 </div>
-            </div>
+            </div> */}
 
 
             <nav className="mt-2">

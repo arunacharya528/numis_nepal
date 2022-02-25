@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "wc-toast";
 
 export const BoughtForm = ({ handleSubmission, clientList, collectibleList }) => {
     const [collectibleId, setCollectibleId] = useState("");
@@ -7,7 +8,7 @@ export const BoughtForm = ({ handleSubmission, clientList, collectibleList }) =>
     const [quantity, setQuantity] = useState(0);
     const [clientId, setClientId] = useState("");
     const [status, setStatus] = useState("booked");
-    const type = "brought";
+    const type = "bought";
 
     const setToDefeault = () => {
         setCollectibleId('')
@@ -17,26 +18,54 @@ export const BoughtForm = ({ handleSubmission, clientList, collectibleList }) =>
         setClientId("")
         setStatus("booked")
     }
-
+    const formValidation = () => {
+        var messages = [];
+        if (!collectibleId) {
+            messages.push({ message: "Collectible is empty" });
+        }
+        if (!buyingPrice) {
+            messages.push({ message: "Buying price is empty" });
+        }
+        if (!sellingPrice) {
+            messages.push({ message: "Selling price is empty" });
+        }
+        if (!quantity) {
+            messages.push({ message: "Quantity is empty" });
+        }
+        if (!clientId) {
+            messages.push({ message: "Client is empty" })
+        }
+        return messages;
+    }
     const submitForm = (e) => {
         e.preventDefault();
-        handleSubmission({
-            collectibleId,
-            buyingPrice,
-            sellingPrice,
-            quantity,
-            clientId,
-            status,
-            type
+
+        const errorMessages = formValidation();
+        errorMessages.map((message) => {
+            toast.error(message.message)
         })
-        setToDefeault();
+        if (errorMessages.length == 0) {
+            handleSubmission({
+                collectibleId,
+                buyingPrice,
+                sellingPrice,
+                quantity,
+                clientId,
+                status,
+                type
+            });
+            setToDefeault();
+        }
+
     }
 
     return (
+
         <form onSubmit={submitForm}>
+            <wc-toast position="top-right"></wc-toast>
             <div className="form-group">
                 <label htmlFor="collectibleId">Select collectible</label>
-                <select className="form-control" id="collectible" onChange={e => setCollectibleId(e.target.value)}>
+                <select className="form-control" id="collectible" onChange={e => setCollectibleId(e.target.value)} required>
                     <option hidden>Select a collectible</option>
                     {collectibleList.map((collectible, index) =>
                         <option key={index} value={collectible._id} active={collectible._id === collectibleId ? true : undefined}>{collectible.description}</option>)}
@@ -49,20 +78,20 @@ export const BoughtForm = ({ handleSubmission, clientList, collectibleList }) =>
                     const sellingPrice = buyingPrice * 16;
                     setSellingPrice(sellingPrice);
                 }}
-                    value={buyingPrice} />
+                    value={buyingPrice} required={true} />
             </div>
             <div className="form-group">
                 <label htmlFor="selling_price">Selling Price</label>
-                <input type="number" className="form-control" id="selling_price" placeholder="Enter your selling price" onChange={e => setSellingPrice(e.target.value)} value={sellingPrice} />
+                <input type="number" className="form-control" id="selling_price" placeholder="Enter your selling price" onChange={e => setSellingPrice(e.target.value)} value={sellingPrice} required={true} />
             </div>
             <div className="form-group">
                 <label htmlFor="quantity">Quantity</label>
-                <input type="number" className="form-control" id="quantity" placeholder="Enter quantity" onChange={e => setQuantity(e.target.value)} value={quantity} />
+                <input type="number" className="form-control" id="quantity" placeholder="Enter quantity" onChange={e => setQuantity(e.target.value)} value={quantity} required={true} />
             </div>
 
             <div className="form-group">
                 <label htmlFor="client">Select client</label>
-                <select className="form-control" id="client" onChange={e => setClientId(e.target.value)}>
+                <select className="form-control" id="client" onChange={e => setClientId(e.target.value)} required={true}>
                     <option hidden>Select a client</option>
                     {clientList.map((client, index) =>
                         <option key={index} value={client._id} active={client._id === clientId ? true : undefined}>{client.name}</option>)}
@@ -153,28 +182,46 @@ export const SoldForm = ({ handleSubmission, clientList, boughtInventory }) => {
 
 
     const setToDefeault = () => {
-        setCollectible({})
+        setCollectibleList([])
+        setCollectible({ id: undefined, name: undefined })
         setBuyingPrice(0)
         setSellingPrice(0)
         setQuantity(0)
         setClientId("")
         setStatus("booked")
     }
-
+    const formValidation = () => {
+        var messages = [];
+        if (!clientId) {
+            messages.push({ message: "Client is empty" });
+        }
+        if (collectibleList.length == 0) {
+            messages.push({ message: "At least one collectible has to be inserted" })
+        }
+        return messages;
+    }
     const submitForm = (e) => {
         e.preventDefault();
+        const errorMessages = formValidation();
 
-        const collectible = collectibleList.map((collectible) => {
-            return {
-                buyingPrice: collectible.buyingPrice,
-                sellingPrice: collectible.sellingPrice,
-                collectibleId: collectible.collectible.id,
-                quantity: collectible.quantity
-            }
+        errorMessages.map((message) => {
+            toast.error(message.message)
         })
 
-        handleSubmission({ clientId, status, type, collectible })
-        setToDefeault();
+        if (errorMessages.length == 0) {
+            const collectible = collectibleList.map((collectible) => {
+                return {
+                    buyingPrice: collectible.buyingPrice,
+                    sellingPrice: collectible.sellingPrice,
+                    collectibleId: collectible.collectible.id,
+                    quantity: collectible.quantity
+                }
+            })
+
+            handleSubmission({ clientId, status, type, collectible })
+            setToDefeault();
+        }
+
     }
 
     const defaultCollectibleGroup = () => {
@@ -196,6 +243,7 @@ export const SoldForm = ({ handleSubmission, clientList, boughtInventory }) => {
     }
     return (
         <form onSubmit={submitForm}>
+            <wc-toast></wc-toast>
             <table className="table">
                 <tbody>
                     <tr>
@@ -208,7 +256,7 @@ export const SoldForm = ({ handleSubmission, clientList, boughtInventory }) => {
                             <select className="form-control" id="client" onChange={e => setClientId(e.target.value)}>
                                 <option hidden>Select a client</option>
                                 {clientList.map((client, index) =>
-                                    <option key={index} value={client._id} active={client._id === clientId ? true : undefined}>{client.name}</option>)}
+                                    <option key={index} value={client._id} selected={client._id === clientId ? true : undefined}>{client.name}</option>)}
                             </select>
                         </td>
                         <td>
