@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useFilters, usePagination, useSortBy, useTable } from "react-table";
 
 import "./Table.scss";
-export const Table = ({ columns, data, filter }) => {
+export const Table = ({ columns, data, filter, handlepageChange, pagePosition }) => {
     // Table component logic and UI come here
 
     const {
@@ -30,7 +30,7 @@ export const Table = ({ columns, data, filter }) => {
     } = useTable({
         columns,
         data,
-        initialState: { pageIndex: 0 },
+        initialState: { pageIndex: pagePosition !== 0 ? pagePosition : 0 },
     },
         useFilters,
         useSortBy,
@@ -46,10 +46,11 @@ export const Table = ({ columns, data, filter }) => {
         setFilterInput(value);
     };
 
-
+    handlepageChange(pageIndex);
     return (
-        <>
+        <div id="table-group">
             <input
+                className="form-control"
                 id="search"
                 value={filterInput}
                 onChange={handleFilterChange}
@@ -149,10 +150,6 @@ export const Table = ({ columns, data, filter }) => {
                 </div>
 
             </div>
-
-
-
-        </>
-
+        </div>
     );
 }

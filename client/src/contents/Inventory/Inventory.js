@@ -23,6 +23,7 @@ export const Inventory = () => {
     const [boughtInventory, setBoughtInventory] = useState([]);
     const [refreshInventory, setRefreshInventory] = useState(false);
     const [selectedInventory, setSelectedInventory] = useState({});
+    const [pageIndex, setPageIndex] = useState(0);
 
     const MySwal = withReactContent(Swal);
 
@@ -290,6 +291,9 @@ export const Inventory = () => {
         </>
     }
 
+    const handlePagePosition = (index) => {
+        setPageIndex(index);
+    }
     let container;
 
     return (
@@ -357,7 +361,7 @@ export const Inventory = () => {
                                 </div>
                             </div>
                             <div className="card-body table-responsive">
-                                <Table columns={columns} data={inventory} filter={{ data: "collectible[0].description", placeholder: "Search by collection description" }} />
+                                <Table columns={columns} data={inventory} filter={{ data: "collectible[0].description", placeholder: "Search by collection description" }} handlepageChange={handlePagePosition} pagePosition={pageIndex} />
                             </div>
                         </div>
                     </div>
