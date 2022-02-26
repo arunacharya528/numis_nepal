@@ -7,7 +7,9 @@ import { Modal } from "../../components/Modal";
 import { UpdateStatus } from "./UpdateStatus";
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
-import { fetchInventory, getBoughtInventory, getInventory } from "./handler";
+import { fetchInventory, getBoughtInventory, getInventory, putToInventory } from "./handler";
+import { getClients } from "../Client/handler";
+import { getCollectibles } from "../Collectible/handler";
 
 
 export const Inventory = () => {
@@ -35,77 +37,23 @@ export const Inventory = () => {
         const url = `${uri}/inventory/${urlQuery}`;
         return url;
     }
-    // const fetchInventory = () => {
-    //     var requestOptions = {
-    //         method: 'GET',
-    //         redirect: 'follow'
-    //     };
 
-    //     fetch(getURL(), requestOptions)
-    //         .then(response => response.json())
-    //         .then(result => {
-    //             setInventory(result)
-    //             setInventoryCount(inventory.length)
-    //         })
-    //         .catch(error => console.log('error', error));
-    // }
 
-    const fetchBoughtInventory = () => {
-
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(`${uri}/inventory?type=bought&status=delivered`, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                setBoughtInventory(result)
-            })
-            .catch(error => console.log('error', error));
-    }
-
-    const fetchClients = () => {
-
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(`${uri}/client`, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                setClients(result)
-            })
-            .catch(error => console.log('error', error));
-    }
-    const fetchCollectibles = () => {
-
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(`${uri}/collectible`, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                setCollectibles(result)
-            })
-            .catch(error => console.log('error', error));
-    }
-    // const applyInventoryData = () => {
-    //     setInventory(getInventory())
-    // }
     useEffect(() => {
-        // fetchBoughtInventory();
-        getInventory(getURL())
-            .then(result => {
-                setInventory(result.data)
-            })
-            .catch((err) => {
-                console.log(err);
-                toast.error(err);
-            })
+        toast.promise(
+            getInventory(getURL())
+                .then(result => {
+                    setInventory(result.data)
+                })
+                .catch((err) => {
+                    console.log(err);
+                    toast.error(err);
+                })
+            , {
+                loading: 'Loading...',
+                success: "Inventory loaded successfully"
+            }
+        )
 
         getBoughtInventory()
             .then(result => {
@@ -116,37 +64,52 @@ export const Inventory = () => {
                 toast.error(err);
             })
 
-        fetchClients();
-        fetchCollectibles();
         setRefreshInventory(false)
-    }, [inventoryCount, query, refreshInventory]);
+    }, [query, refreshInventory]);
+
+    useEffect(() => {
+        getClients()
+            .then(result => {
+                setClients(result.data)
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(err);
+            })
 
 
-    const Status = ({ value, id, index }) => {
+        getCollectibles()
+            .then(result => {
+                setCollectibles(result.data)
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(err);
+            })
+    }, [])
+
+    const Status = ({ value, id }) => {
 
         const setStatus = (status, id) => {
-            const axios = require('axios');
-            const qs = require('qs');
-            let data = qs.stringify({
-                'status': status
-            });
-            let config = {
-                method: 'put',
-                url: `${uri}/inventory/${id}`,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                maxRedirects: 0,
-                data: data
-            };
-
-            axios(config)
-                .then((response) => {
-                    setRefreshInventory(true);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            Swal.fire({
+                title: 'Are you sure you want to change status?',
+                text: "You can revert this anytime",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, change it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    putToInventory({ status }, id)
+                        .then((response) => {
+                            setRefreshInventory(true);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
+            })
         }
 
         return (
@@ -388,8 +351,8 @@ export const Inventory = () => {
                                         <button onClick={handleSearchQuery} value="delivered" className={"btn btn-sm btn-outline-secondary " + (query.status === "delivered" ? "active" : "")}>Delivered</button>
                                     </div>
                                     <div className="btn-group mr-2">
-                                        <button onClick={handleSearchQuery} value="bought" className={"btn btn-sm btn-warning " + (query.type === "bought" ? "active" : "")}>Bought</button>
-                                        <button onClick={handleSearchQuery} value="sold" className={"btn btn-sm btn-success " + (query.type === "sold" ? "active" : "")}>Sold</button>
+                                        <button onClick={handleSearchQuery} value="bought" className={"btn btn-sm btn-outline-warning " + (query.type === "bought" ? "active" : "")}>Bought</button>
+                                        <button onClick={handleSearchQuery} value="sold" className={"btn btn-sm btn-outline-success " + (query.type === "sold" ? "active" : "")}>Sold</button>
                                     </div>
                                 </div>
                             </div>

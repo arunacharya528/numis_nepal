@@ -110,5 +110,19 @@ router.get("/inventory/:inventory_id", (req, res, next) => {
         })
 })
 
+router.put("/inventory/:inventory_id", (req, res, next) => {
+    const { status } = req.body;
+
+    Inventory.findById(req.params.inventory_id, (err, data) => {
+        data.status = status ? status : data.status;
+        data.save()
+            .then(result => res.status(200).send(result))
+            .catch(err => {
+                console.log(err);
+                res.status(500).send(err.message);
+            });
+    })
+})
+
 
 module.exports = router;
