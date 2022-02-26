@@ -2,9 +2,12 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
 import { Add, BoughtForm, SoldForm } from "./Add";
-// import { ToastContainer, toast } from 'react-toastify';
 import { toast } from "wc-toast"
-import 'react-toastify/dist/ReactToastify.css';
+import { Modal } from "../../components/Modal";
+import { UpdateStatus } from "./UpdateStatus";
+import Swal from 'sweetalert2'
+import withReactContent from "sweetalert2-react-content";
+import { fetchInventory, getBoughtInventory, getInventory } from "./handler";
 
 
 export const Inventory = () => {
@@ -16,6 +19,10 @@ export const Inventory = () => {
     const [collectibles, setCollectibles] = useState([]);
     const [query, setQuery] = useState({ status: undefined, type: undefined });
     const [boughtInventory, setBoughtInventory] = useState([]);
+    const [refreshInventory, setRefreshInventory] = useState(false);
+    const [selectedInventory, setSelectedInventory] = useState({});
+
+    const MySwal = withReactContent(Swal);
 
     const getURL = () => {
         var urlQuery = "?"
@@ -28,20 +35,20 @@ export const Inventory = () => {
         const url = `${uri}/inventory/${urlQuery}`;
         return url;
     }
-    const fetchInventory = () => {
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
+    // const fetchInventory = () => {
+    //     var requestOptions = {
+    //         method: 'GET',
+    //         redirect: 'follow'
+    //     };
 
-        fetch(getURL(), requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                setInventory(result)
-                setInventoryCount(inventory.length)
-            })
-            .catch(error => console.log('error', error));
-    }
+    //     fetch(getURL(), requestOptions)
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             setInventory(result)
+    //             setInventoryCount(inventory.length)
+    //         })
+    //         .catch(error => console.log('error', error));
+    // }
 
     const fetchBoughtInventory = () => {
 
@@ -86,30 +93,69 @@ export const Inventory = () => {
             })
             .catch(error => console.log('error', error));
     }
-
+    // const applyInventoryData = () => {
+    //     setInventory(getInventory())
+    // }
     useEffect(() => {
-        fetchBoughtInventory();
-        fetchInventory();
+        // fetchBoughtInventory();
+        getInventory(getURL())
+            .then(result => {
+                setInventory(result.data)
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(err);
+            })
+
+        getBoughtInventory()
+            .then(result => {
+                setBoughtInventory(result.data)
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(err);
+            })
+
         fetchClients();
         fetchCollectibles();
-    }, [inventoryCount, query]);
+        setRefreshInventory(false)
+    }, [inventoryCount, query, refreshInventory]);
 
 
-    const Status = ({ value }) => {
-        const bootstrapColor = (value) => {
-            switch (value) {
-                case "booked":
-                    return "danger";
-                case "paid":
-                    return "primary";
-                case "delivered":
-                    return "success";
-                default:
-                    return "secondary";
-            }
+    const Status = ({ value, id, index }) => {
+
+        const setStatus = (status, id) => {
+            const axios = require('axios');
+            const qs = require('qs');
+            let data = qs.stringify({
+                'status': status
+            });
+            let config = {
+                method: 'put',
+                url: `${uri}/inventory/${id}`,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                maxRedirects: 0,
+                data: data
+            };
+
+            axios(config)
+                .then((response) => {
+                    setRefreshInventory(true);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         }
 
-        return <span className={"badge badge-" + bootstrapColor(value)}>{value}</span>
+        return (
+            <div className="btn btn-group d-flex">
+                <div className={"btn btn-outline-secondary btn-sm " + (value == "booked" ? "active" : "")} onClick={e => setStatus("booked", id)}>Booked</div>
+                <div className={"btn btn-outline-secondary btn-sm " + (value == "paid" ? "active" : "")} onClick={e => setStatus("paid", id)}>Paid</div>
+                <div className={"btn btn-outline-secondary btn-sm " + (value == "delivered" ? "active" : "")} onClick={e => setStatus("delivered", id)}>Delivered</div>
+            </div>
+        );
     }
 
     const Type = ({ value }) => {
@@ -173,7 +219,7 @@ export const Inventory = () => {
                     {
                         Header: "Status",
                         accessor: "status",
-                        Cell: ({ cell: { value } }) => <Status value={value} />
+                        Cell: props => <Status value={props.row.original.status} id={props.row.original._id} index={props.row.index} />
                     },
                     {
                         Header: "Client",
@@ -250,7 +296,6 @@ export const Inventory = () => {
                 quantity: row.quantity,
             };
             insertIntoInventory(inventory);
-            // console.log(inventory);
         })
     }
 
@@ -287,7 +332,6 @@ export const Inventory = () => {
     return (
         <>
             <wc-toast className="top-right"></wc-toast>
-            {/* <ToastContainer ref={(ref) => (container = ref)} className="toast-top-right" /> */}
             <Breadcrumb title={"Inventory"} />
             <section className="content">
                 <div className="row">
@@ -339,9 +383,9 @@ export const Inventory = () => {
                                 <div className="mt-3">
                                     <button onClick={handleSearchQuery} value="default" className={"btn btn-sm btn-secondary mr-2 " + (!query.status && !query.type ? "active" : "")}>Default</button>
                                     <div className="btn-group mr-2">
-                                        <button onClick={handleSearchQuery} value="booked" className={"btn btn-sm btn-danger " + (query.status === "booked" ? "active" : "")}>Booked</button>
-                                        <button onClick={handleSearchQuery} value="paid" className={"btn btn-sm btn-primary " + (query.status === "paid" ? "active" : "")}>Paid</button>
-                                        <button onClick={handleSearchQuery} value="delivered" className={"btn btn-sm btn-success " + (query.status === "delivered" ? "active" : "")}>Delivered</button>
+                                        <button onClick={handleSearchQuery} value="booked" className={"btn btn-sm btn-outline-secondary " + (query.status === "booked" ? "active" : "")}>Booked</button>
+                                        <button onClick={handleSearchQuery} value="paid" className={"btn btn-sm btn-outline-secondary " + (query.status === "paid" ? "active" : "")}>Paid</button>
+                                        <button onClick={handleSearchQuery} value="delivered" className={"btn btn-sm btn-outline-secondary " + (query.status === "delivered" ? "active" : "")}>Delivered</button>
                                     </div>
                                     <div className="btn-group mr-2">
                                         <button onClick={handleSearchQuery} value="bought" className={"btn btn-sm btn-warning " + (query.type === "bought" ? "active" : "")}>Bought</button>
