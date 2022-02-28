@@ -110,6 +110,59 @@ router.get("/inventory/:inventory_id", (req, res, next) => {
         })
 })
 
+router.get("/inventory/remainingQuantity/:collectible_id", (req, res, next) => {
+    Inventory
+        .aggregate([
+            {
+                '$group': {
+                    '_id': '$collectible',
+                    'bought': {
+                        '$sum': {
+                            '$cond': [
+                                {
+                                    '$eq': [
+                                        '$type', 'bought'
+                                    ]
+                                }, '$quantity', 0
+                            ]
+                        }
+                    },
+                    'sold': {
+                        '$sum': {
+                            '$cond': [
+                                {
+                                    '$eq': [
+                                        '$type', 'sold'
+                                    ]
+                                }, '$quantity', 0
+                            ]
+                        }
+                    }
+                }
+            }, {
+                '$match': {
+                    '_id': new ObjectId(req.params.collectible_id)
+                }
+            }, {
+                '$project': {
+                    '_id': '$_id',
+                    'remainingQuantity': {
+                        '$subtract': [
+                            '$bought', '$sold'
+                        ]
+                    }
+                }
+            }
+        ])
+        .then(result => {
+            res.status(200).send(result)
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).send(err.message);
+        });
+})
+
 router.put("/inventory/:inventory_id", (req, res, next) => {
     const { status } = req.body;
 
