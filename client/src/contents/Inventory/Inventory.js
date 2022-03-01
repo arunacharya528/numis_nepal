@@ -1,13 +1,11 @@
 import { Breadcrumb } from "../../components/Breadcrumb";
 import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
-import { Add, BoughtForm, SoldForm } from "./Add";
+import { BoughtForm, SoldForm } from "./Add";
 import { toast } from "wc-toast"
-import { Modal } from "../../components/Modal";
-import { UpdateStatus } from "./UpdateStatus";
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
-import { fetchInventory, getBoughtInventory, getInventory, putToInventory } from "./handler";
+import { getBoughtInventory, getInventory, postToInventory, putToInventory } from "./handler";
 import { getClients } from "../Client/handler";
 import { getCollectibles } from "../Collectible/handler";
 
@@ -22,7 +20,6 @@ export const Inventory = () => {
     const [query, setQuery] = useState({ status: undefined, type: undefined });
     const [boughtInventory, setBoughtInventory] = useState([]);
     const [refreshInventory, setRefreshInventory] = useState(false);
-    const [selectedInventory, setSelectedInventory] = useState({});
     const [pageIndex, setPageIndex] = useState(0);
 
     const MySwal = withReactContent(Swal);
@@ -38,7 +35,6 @@ export const Inventory = () => {
         const url = `${uri}/inventory/${urlQuery}`;
         return url;
     }
-
 
     useEffect(() => {
         toast.promise(
@@ -159,6 +155,7 @@ export const Inventory = () => {
             return "Just now"
         }
     }
+
     const columns = useMemo(
         () => [
             {
@@ -204,8 +201,6 @@ export const Inventory = () => {
                     {
                         Header: "Action",
                         Cell: <div className="btn-group">
-                            <button type="button" className="btn btn-sm btn-secondary"><i className="fa fa-eye" aria-hidden="true"></i></button>
-                            <button type="button" className="btn btn-sm btn-primary"><i className="fas fa-edit    "></i></button>
                             <button type="button" className="btn btn-sm btn-danger"><i className="fa fa-trash" aria-hidden="true"></i></button>
                         </div>
                     }
@@ -214,38 +209,6 @@ export const Inventory = () => {
         ],
         []
     );
-
-    const insertIntoInventory = (inventory) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-
-        var urlencoded = new URLSearchParams();
-        urlencoded.append("buyingPrice", inventory.buyingPrice);
-        urlencoded.append("sellingPrice", inventory.sellingPrice);
-        urlencoded.append("quantity", inventory.quantity);
-        urlencoded.append("status", inventory.status);
-        urlencoded.append("collectibleId", inventory.collectibleId);
-        urlencoded.append("clientId", inventory.clientId);
-        urlencoded.append("type", inventory.type);
-
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: urlencoded,
-            redirect: 'follow'
-        };
-
-        fetch(`${uri}/inventory`, requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                setInventoryCount(inventoryCount + 1);
-                toast.success("Inserted 1 row into inventory")
-            })
-            .catch(err => {
-                console.log('error', err)
-                toast.error(err);
-            });
-    }
 
     const handleSoldStatus = (data) => {
 
@@ -259,12 +222,41 @@ export const Inventory = () => {
                 collectibleId: row.collectibleId,
                 quantity: row.quantity,
             };
-            insertIntoInventory(inventory);
+            toast.promise(
+                postToInventory(inventory)
+                    .then(result => {
+                        setInventoryCount(inventoryCount + 1);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        toast.error(err);
+                    })
+                , {
+                    loading: 'Saving...',
+                    success: "Successfully saved to inventory"
+                }
+            )
         })
+
+        setRefreshInventory(true)
     }
 
     const handleBoughtStatus = (data) => {
-        insertIntoInventory(data);
+
+        toast.promise(
+            postToInventory(data)
+                .then(result => {
+                })
+                .catch((err) => {
+                    console.log(err);
+                    toast.error(err);
+                })
+            , {
+                loading: 'Saving...',
+                success: "Successfully saved to inventory"
+            }
+        )
+        setRefreshInventory(true);
     }
 
     const handleSearchQuery = (e) => {
@@ -294,7 +286,6 @@ export const Inventory = () => {
     const handlePagePosition = (index) => {
         setPageIndex(index);
     }
-    let container;
 
     return (
         <>
@@ -358,6 +349,7 @@ export const Inventory = () => {
                                         <button onClick={handleSearchQuery} value="bought" className={"btn btn-sm btn-outline-warning " + (query.type === "bought" ? "active" : "")}>Bought</button>
                                         <button onClick={handleSearchQuery} value="sold" className={"btn btn-sm btn-outline-success " + (query.type === "sold" ? "active" : "")}>Sold</button>
                                     </div>
+                                    <button className="btn btn-secondary btn-sm" onClick={e => setRefreshInventory(true)}><i class="fas fa-sync"></i> </button>
                                 </div>
                             </div>
                             <div className="card-body table-responsive">

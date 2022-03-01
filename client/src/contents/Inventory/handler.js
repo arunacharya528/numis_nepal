@@ -26,6 +26,22 @@ export const getBoughtInventory = async () => {
     return axios(config);
 }
 
+export const postToInventory = async (inventory) => {
+
+    let data = qs.stringify(inventory);
+    let config = {
+        method: 'post',
+        url: `${apiBaseURL}/inventory`,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        maxRedirects: 0,
+        data: data
+    };
+
+    return axios(config);
+}
+
 export const putToInventory = async (props, id) => {
     let data = qs.stringify({
         'status': props.status
