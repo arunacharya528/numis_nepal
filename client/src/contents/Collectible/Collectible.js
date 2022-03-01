@@ -2,27 +2,33 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
 import { Add } from "./Add";
+import { getCollectibles, saveCollectible } from "./handler";
+import { toast } from "wc-toast";
 
 export const Collectible = () => {
     const uri = "http://localhost:3000/api";
-
-    const [collectibleCount, setCollectibleCount] = useState(0);
     const [collectibles, setCollectibles] = useState([]);
 
-    useEffect(() => {
-        const fetchCollectibles = async () => {
-            try {
-                const response = await fetch(`${uri}/collectible`);
-                const json = await response.json();
-                setCollectibles(json);
-                setCollectibleCount(collectibles.length);
-            } catch (error) {
-                console.log("error", error);
-            }
-        }
+    const [refreshCollectibles, setRefreshCollectibles] = useState(false);
+    const [pageIndex, setPageIndex] = useState(0);
 
-        fetchCollectibles();
-    }, [collectibleCount]);
+    useEffect(() => {
+        toast.promise(
+            getCollectibles()
+                .then(result => {
+                    setCollectibles(result.data)
+                })
+                .catch((err) => {
+                    console.log(err);
+                    toast.error(err);
+                })
+            , {
+                loading: 'Loading...',
+                success: "Collectibles loaded successfully"
+            }
+        )
+        setRefreshCollectibles(false);
+    }, [refreshCollectibles]);
 
     const columns = useMemo(
         () => [
@@ -52,30 +58,28 @@ export const Collectible = () => {
     );
 
     const handleInsertion = (data) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+        toast.promise(
+            saveCollectible(data)
+                .then(result => {
+                    setRefreshCollectibles(true);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    toast.error(err);
+                })
+            , {
+                loading: 'Saving...',
+                success: "Collectible saved successfully"
+            }
+        )
+    }
 
-        var urlencoded = new URLSearchParams();
-        urlencoded.append("description", data.description);
-        urlencoded.append("quality", data.quality);
-
-
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: urlencoded,
-            redirect: 'follow'
-        };
-
-        fetch(`${uri}/collectible`, requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                setCollectibleCount(collectibleCount + 1);
-            })
-            .catch(error => console.log('error', error));
+    const handlePageChange=(index)=>{
+        setPageIndex(index);
     }
     return (
         <>
+            <wc-toast/>
             <Breadcrumb title={"Collectible"} />
             <section className="content">
                 <div className="row">
@@ -102,7 +106,7 @@ export const Collectible = () => {
 
                         <div className="card">
                             <div className="card-body">
-                                <Table columns={columns} data={collectibles} filter={{ data: "description", placeholder: "Search by collectible description" }} />
+                                <Table columns={columns} data={collectibles} filter={{ data: "description", placeholder: "Search by collectible description" }} handlepageChange={handlePageChange} pagePosition={pageIndex} />
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 const apiBaseURL = 'http://localhost:3000/api'
-
+const qs = require('qs');
 
 
 export const getCollectibles = async () => {
@@ -11,4 +11,20 @@ export const getCollectibles = async () => {
     };
 
     return axios(config);
+}
+
+export const saveCollectible = async (collectible) => { 
+    let data = qs.stringify(collectible);
+    let config = {
+        method: 'post',
+        url: `${apiBaseURL}/collectible/`,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        maxRedirects: 0,
+        data: data
+    };
+
+    return axios(config);
+
 }
