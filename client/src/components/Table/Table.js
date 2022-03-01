@@ -92,17 +92,17 @@ export const Table = ({ columns, data, filter, handlepageChange, pagePosition })
                 </tbody>
             </table>
 
-
             {rows.length === 0 ? <p className="p-3 text-center">No data available</p> : ''
             }
             <div className="pagination">
-                <div>
-                    <span>
-                        Page:{' '}
+                <div className="d-flex ">
+                    <span className="d-flex align-items-center">
+                        Page&emsp;
                         <input
                             type="number"
                             min="1"
                             max={pageOptions.length}
+                            className="form-control"
                             defaultValue={pageIndex + 1}
                             onChange={e => {
                                 const page = e.target.value ? Number(e.target.value) - 1 : 0
@@ -113,6 +113,7 @@ export const Table = ({ columns, data, filter, handlepageChange, pagePosition })
                     </span>
                     {' '}
                     <select
+                        className="form-control"
                         value={pageSize}
                         onChange={e => {
                             setPageSize(Number(e.target.value))
