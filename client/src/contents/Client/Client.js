@@ -3,42 +3,36 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
 import { Add, Form } from "./Add";
 import { Edit } from "./Edit";
+import { getClients, postClient } from "./handler";
+import { toast } from "wc-toast";
 
 export const Client = () => {
     const uri = "http://localhost:3000/api";
-
-    const [clientCount, setClientCount] = useState(0);
     const [clients, setClients] = useState([]);
     const [toggleEdit, setToggleEdit] = useState({ state: false, id: undefined });
     const [client, setClient] = useState([]);
+    const [refreshClients,setRefreshClients] = useState(false)
+
+    const [pageIndex, setPageIndex] = useState(0);
 
     useEffect(() => {
-        const fetchClients = async () => {
-            try {
-                const response = await fetch(`${uri}/client`);
-                const json = await response.json();
-                setClients(json);
-                setClientCount(clients.length);
-            } catch (error) {
-                console.log("error", error);
-            }
-        }
 
-        const fetchClient = async (clientId) => {
-            try {
-                const response = await fetch(`${uri}/client/${clientId}`);
-                const json = await response.json();
-                setClient(json);
-            } catch (error) {
-                console.log("error", error);
+        toast.promise(
+            getClients()
+                .then(result => {
+                    setClients(result.data)
+                })
+                .catch((err) => {
+                    console.log(err);
+                    toast.error(err);
+                })
+            , {
+                loading: 'Loading...',
+                success: "Clients loaded successfully"
             }
-        }
-
-        if (toggleEdit.state == true) {
-            fetchClient(toggleEdit.id);
-        }
-        fetchClients();
-    }, [clientCount, toggleEdit]);
+        )
+        setRefreshClients(false);
+    }, [refreshClients]);
 
 
 
@@ -64,7 +58,7 @@ export const Client = () => {
                         accessor: "_id",
                         Cell: ({ cell: { value } }) => <div className="btn-group">
                             <button type="button" className="btn btn-sm btn-secondary"><i className="fa fa-eye" aria-hidden="true"></i></button>
-                            <button type="button" className="btn btn-sm btn-primary" onClick={e => showEditForm(value)}><i className="fas fa-edit    "></i></button>
+                            <button type="button" className="btn btn-sm btn-primary" ><i className="fas fa-edit"></i></button>
                             <button type="button" className="btn btn-sm btn-danger"><i className="fa fa-trash" aria-hidden="true"></i></button>
                         </div>
                     }
@@ -74,35 +68,31 @@ export const Client = () => {
         []
     );
 
-    const showEditForm = (value) => {
-        setToggleEdit({ state: true, id: value });
-    }
+
 
     const handleInsertion = (data) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+        toast.promise(
+            postClient(data)
+                .then(result => {
+                    setRefreshClients(true)
+                })
+                .catch((err) => {
+                    console.log(err);
+                    toast.error(err);
+                })
+            , {
+                loading: 'Loading...',
+                success: "Client saved successfully"
+            }
+        )
+    }
 
-        var urlencoded = new URLSearchParams();
-        urlencoded.append("name", data.name);
-        urlencoded.append("description", data.description);
-        urlencoded.append("contact", data.contact);
-
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: urlencoded,
-            redirect: 'follow'
-        };
-
-        fetch(`${uri}/client`, requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                setClientCount(clientCount + 1);
-            })
-            .catch(error => console.log('error', error));
+    const handlePageChange=(index)=>{
+        setPageIndex(index);
     }
     return (
         <>
+            <wc-toast/>
             <Breadcrumb title={"Client"} />
             <section className="content">
                 <div className="row">
@@ -131,7 +121,8 @@ export const Client = () => {
                             <div className="col">
                                 <div className="card">
                                     <div className="card-body">
-                                        <Table columns={columns} data={clients} filter={{ data: "name", placeholder: "Search by client name" }} />
+                                        <Table columns={columns} data={clients} filter={{ data: "name", placeholder: "Search by client name" }} handlepageChange={handlePageChange} pagePosition={pageIndex} />
+
                                     </div>
                                 </div>
                             </div>

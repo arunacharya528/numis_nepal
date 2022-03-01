@@ -2,7 +2,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
 import { Add } from "./Add";
-import { getCollectibles, saveCollectible } from "./handler";
+import { getCollectibles, postCollectible, saveCollectible } from "./handler";
 import { toast } from "wc-toast";
 
 export const Collectible = () => {
@@ -59,7 +59,7 @@ export const Collectible = () => {
 
     const handleInsertion = (data) => {
         toast.promise(
-            saveCollectible(data)
+            postCollectible(data)
                 .then(result => {
                     setRefreshCollectibles(true);
                 })

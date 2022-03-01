@@ -13,7 +13,7 @@ export const getCollectibles = async () => {
     return axios(config);
 }
 
-export const saveCollectible = async (collectible) => { 
+export const postCollectible = async (collectible) => { 
     let data = qs.stringify(collectible);
     let config = {
         method: 'post',

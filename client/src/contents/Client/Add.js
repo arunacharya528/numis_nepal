@@ -39,7 +39,7 @@ export const Add = ({ handleSubmission, data }) => {
 
             <div className="form-group">
                 <label htmlFor="name">Description</label>
-                <textarea className="form-control" rows={5} onChange={e => setDescription(e.target.value)}></textarea>
+                <textarea className="form-control" rows={5} onChange={e => setDescription(e.target.value)} value={description}></textarea>
             </div>
 
             <table>
