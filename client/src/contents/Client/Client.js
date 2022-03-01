@@ -3,17 +3,20 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Table } from "../../components/Table/Table";
 import { Add, Form } from "./Add";
 import { Edit } from "./Edit";
-import { getClients, postClient } from "./handler";
+import { getClients, postClient, putClient } from "./handler";
 import { toast } from "wc-toast";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 
 export const Client = () => {
     const uri = "http://localhost:3000/api";
     const [clients, setClients] = useState([]);
     const [toggleEdit, setToggleEdit] = useState({ state: false, id: undefined });
-    const [client, setClient] = useState([]);
-    const [refreshClients,setRefreshClients] = useState(false)
+    const [editingClient, setEditingClient] = useState([]);
+    const [refreshClients, setRefreshClients] = useState(false)
 
     const [pageIndex, setPageIndex] = useState(0);
+    const MySwal = withReactContent(Swal);
 
     useEffect(() => {
 
@@ -56,9 +59,9 @@ export const Client = () => {
                     {
                         Header: "Action",
                         accessor: "_id",
-                        Cell: ({ cell: { value } }) => <div className="btn-group">
+                        Cell: props => <div className="btn-group">
                             <button type="button" className="btn btn-sm btn-secondary"><i className="fa fa-eye" aria-hidden="true"></i></button>
-                            <button type="button" className="btn btn-sm btn-primary" ><i className="fas fa-edit"></i></button>
+                            <button type="button" className="btn btn-sm btn-primary" onClick={(e) => { setEditingClient(props.row.original) }}><i className="fas fa-edit"></i></button>
                             <button type="button" className="btn btn-sm btn-danger"><i className="fa fa-trash" aria-hidden="true"></i></button>
                         </div>
                     }
@@ -87,12 +90,42 @@ export const Client = () => {
         )
     }
 
-    const handlePageChange=(index)=>{
+    const handlePageChange = (index) => {
         setPageIndex(index);
+    }
+
+    const handleUpdate = (data) => {
+
+        Swal.fire({
+            title: 'Are you sure you want to update client?',
+            text: "You can make changes anytime you want",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                toast.promise(
+                    putClient(data.client, data.id)
+                        .then(result => {
+                            setRefreshClients(true)
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            toast.error(err);
+                        })
+                    , {
+                        loading: 'Updating...',
+                        success: "Client updated successfully"
+                    }
+                )
+            }
+        })
     }
     return (
         <>
-            <wc-toast/>
+            <wc-toast />
             <Breadcrumb title={"Client"} />
             <section className="content">
                 <div className="row">
@@ -127,9 +160,9 @@ export const Client = () => {
                                 </div>
                             </div>
                             {
-                                toggleEdit.state ?
+                                editingClient.length !== 0 ?
                                     <div className="col-4">
-                                        <Edit onClose={e => { setToggleEdit({ state: false, id: undefined }) }} data={client} />
+                                        <Edit onClose={e => { setEditingClient([]) }} data={editingClient} onUpdate={handleUpdate} />
                                     </div> : ""
                             }
                         </div>

@@ -1,10 +1,12 @@
+import { useEffect } from "react";
 import { useState } from "react";
 import { Add, Form } from "./Add";
 
-export const Edit = ({ onClose,data }) => {
-    const [name, setName] = useState(data.name);
-    const [contact, setContact] = useState(data.contact);
-    const [description, setDescription] = useState(data.description);
+export const Edit = ({ onClose, data, onUpdate }) => {
+    const [name, setName] = useState("");
+    const [contact, setContact] = useState("");
+    const [description, setDescription] = useState("");
+    const [id, setId] = useState("");
 
     const setToDefeault = () => {
         setName("");
@@ -12,19 +14,28 @@ export const Edit = ({ onClose,data }) => {
         setContact("");
     }
 
+    useEffect(() => {
+        setName(data.name)
+        setContact(data.contact)
+        setDescription(data.description)
+        setId(data._id)
+    }, [data])
     const submitForm = (e) => {
         e.preventDefault();
-        // handleSubmission({
-        //     name,
-        //     description,
-        //     contact
-        // });
-        setToDefeault();
+        onUpdate({
+            id:id,
+            client: {
+                name,
+                description,
+                contact
+            }
+        });
+        // setToDefeault();
     }
 
 
     return (
-        <div className="card">
+        <div className="card sticky-top">
             <div className="card-body">
                 <div className="d-flex justify-content-between">
                     <h3>Edit client</h3>
@@ -51,6 +62,8 @@ export const Edit = ({ onClose,data }) => {
                         <label htmlFor="name">Description</label>
                         <textarea className="form-control" rows={5} onChange={e => setDescription(e.target.value)} value={description}></textarea>
                     </div>
+
+                    <button type="submit" className="btn btn-primary">Update</button>
                 </form>
             </div>
         </div>
