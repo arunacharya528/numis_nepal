@@ -46,4 +46,20 @@ router.get("/client/:client_id", (req, res, next) => {
         })
 })
 
+router.put("/client/:client_id", (req, res, next) => { 
+    const { name, contact, description } = req.body;
+    // console.log(req.params,req.body)
+    Client.findById(req.params.client_id, (err, data) => { 
+        data.name = name;
+        data.description = description;
+        data.contact = contact;
+        data.save()
+            .then(result => res.status(200).send(result))
+            .catch(err => {
+                console.log(err);
+                res.status(500).send(err.message);
+            });
+    })
+})
+
 module.exports = router;
