@@ -46,4 +46,19 @@ router.get("/collectible/:collectible_id", (req, res, next) => {
         })
 })
 
+router.put("/collectible/:collectible_id", (req, res, next) => {
+    const { description, quality } = req.body;
+    Collectible
+        .findById(req.params.collectible_id, (err, data) => {
+            data.description = description;
+            data.quality = quality;
+            data.save()
+                .then(result => res.status(200).send(result))
+                .catch(err => {
+                    console.log(err);
+                    res.status(500).send(err.message);
+                });
+        })
+})
+
 module.exports = router;

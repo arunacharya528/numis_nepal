@@ -28,3 +28,18 @@ export const postCollectible = async (collectible) => {
     return axios(config);
 
 }
+
+export const putCollectible = async (props, id) => {
+    let data = qs.stringify(props);
+    let config = {
+        method: 'put',
+        url: `${apiBaseURL}/collectible/${id}`,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        maxRedirects: 0,
+        data: data
+    };
+
+    return axios(config)
+}
