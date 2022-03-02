@@ -8,6 +8,7 @@ import withReactContent from "sweetalert2-react-content";
 import { getBoughtInventory, getInventory, postToInventory, putToInventory } from "./handler";
 import { getClients } from "../Client/handler";
 import { getCollectibles } from "../Collectible/handler";
+import { FilterBar } from "./Filter";
 
 
 export const Inventory = () => {
@@ -24,21 +25,9 @@ export const Inventory = () => {
 
     const MySwal = withReactContent(Swal);
 
-    const getURL = () => {
-        var urlQuery = "?"
-        if (query.status) {
-            urlQuery += `status=${query.status}`
-        }
-        if (query.type) {
-            urlQuery += `&type=${query.type}`
-        }
-        const url = `${uri}/inventory/${urlQuery}`;
-        return url;
-    }
-
     useEffect(() => {
         toast.promise(
-            getInventory(getURL())
+            getInventory(`${uri}/inventory?${query}`)
                 .then(result => {
                     setInventory(result.data)
                 })
@@ -259,30 +248,6 @@ export const Inventory = () => {
         setRefreshInventory(true);
     }
 
-    const handleSearchQuery = (e) => {
-        var value = e.target.value;
-
-        if (value === 'booked' || value === 'paid' || value === 'delivered') {
-            value = query.status === value ? undefined : value
-            setQuery({ status: value, type: query.type })
-        } else if (value === 'bought' || value === 'sold') {
-            value = query.type === value ? undefined : value
-            setQuery({ status: query.status, type: value })
-        } else if (value = "default") {
-            setQuery({ status: undefined, type: undefined })
-        }
-    }
-
-    const listingTitle = () => {
-        return <>
-            {query.status || query.type ? <>Items where</> : ""}
-            {query.status ? <> status is <b>{query.status}</b></> : ""}
-            {query.status && query.type ? " and " : ''}
-            {query.type ? <> type is <b>{query.type}</b></> : ""}
-            {!query.status && !query.type ? <b>All Items</b> : ""}
-        </>
-    }
-
     const handlePagePosition = (index) => {
         setPageIndex(index);
     }
@@ -336,20 +301,30 @@ export const Inventory = () => {
                         </div>
 
                         <div className="card">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <h3 class="card-title">{listingTitle()}</h3>
-                                <div className="mt-3">
-                                    <button onClick={handleSearchQuery} value="default" className={"btn btn-sm btn-secondary mr-2 " + (!query.status && !query.type ? "active" : "")}>Default</button>
-                                    <div className="btn-group mr-2">
-                                        <button onClick={handleSearchQuery} value="booked" className={"btn btn-sm btn-outline-secondary " + (query.status === "booked" ? "active" : "")}>Booked</button>
-                                        <button onClick={handleSearchQuery} value="paid" className={"btn btn-sm btn-outline-secondary " + (query.status === "paid" ? "active" : "")}>Paid</button>
-                                        <button onClick={handleSearchQuery} value="delivered" className={"btn btn-sm btn-outline-secondary " + (query.status === "delivered" ? "active" : "")}>Delivered</button>
+                            <div className="card-header">
+                                <div className="d-flex">
+                                    <div>
+                                        <button className="btn btn-secondary mr-2" onClick={e=>setRefreshInventory(true)}><i class="fas fa-sync"></i> </button>
                                     </div>
-                                    <div className="btn-group mr-2">
-                                        <button onClick={handleSearchQuery} value="bought" className={"btn btn-sm btn-outline-warning " + (query.type === "bought" ? "active" : "")}>Bought</button>
-                                        <button onClick={handleSearchQuery} value="sold" className={"btn btn-sm btn-outline-success " + (query.type === "sold" ? "active" : "")}>Sold</button>
+                                    <div className="accordion w-100" id="">
+                                        <div className="card">
+                                            <div className="card-header p-0" id="headingOne">
+                                                <h2 className="mb-0">
+                                                    <button className="btn btn-default btn-block" data-toggle="collapse" data-target="#filterCollapse">
+                                                        <i class="fa fa-filter" aria-hidden="true"></i>
+                                                        {" "}
+                                                        Filter inventory
+                                                    </button>
+                                                </h2>
+                                            </div>
+
+                                            <div id="filterCollapse" className="collapse">
+                                                <div className="card-body">
+                                                    <FilterBar collectibles={collectibles} clients={clients} handleUrlQuery={(query) => setQuery(query)} />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button className="btn btn-secondary btn-sm" onClick={e => setRefreshInventory(true)}><i class="fas fa-sync"></i> </button>
                                 </div>
                             </div>
                             <div className="card-body table-responsive">
