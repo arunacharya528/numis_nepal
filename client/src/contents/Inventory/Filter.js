@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useState } from "react";
+import { useLocation } from "react-router";
 
 export const FilterBar = ({ collectibles, clients, handleUrlQuery }) => {
     const [status, setStatus] = useState('');
@@ -8,6 +9,8 @@ export const FilterBar = ({ collectibles, clients, handleUrlQuery }) => {
     const [client, setClient] = useState('');
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
+    const pageQuery = useLocation();
+
 
 
     const handleStatusChange = (e) => {
@@ -33,6 +36,22 @@ export const FilterBar = ({ collectibles, clients, handleUrlQuery }) => {
         setType('')
     }
 
+    // const useQuery = () => {
+    //     console.log(URLSearchParams(selectedQuery));
+    // }
+    useEffect(() => {
+        var query = pageQuery.search.substring(1, pageQuery.search.length);
+        query = query.split("&");
+        query.map((item) => {
+            const component = item.split('=')
+            if (component[0] === 'status') setStatus(component[1])
+            if (component[0] === 'type') setType(component[1])
+            if (component[0] === 'collectible_id') setCollectible(component[1])
+            if (component[0] === 'client_id') setClient(component[1])
+            if (component[0] === 'from') setFrom(component[1])
+            if (component[0] === 'to') setTo(component[1])
+        })
+    }, [])
     useEffect(() => {
         var urlQuery = [];
 
@@ -56,7 +75,6 @@ export const FilterBar = ({ collectibles, clients, handleUrlQuery }) => {
         }
 
         const uriQuery = urlQuery.join("&");
-        console.log(uriQuery);
         handleUrlQuery(uriQuery);
     }, [status, type, collectible, client, from, to])
 

@@ -9,6 +9,7 @@ import { getBoughtInventory, getInventory, postToInventory, putToInventory } fro
 import { getClients } from "../Client/handler";
 import { getCollectibles } from "../Collectible/handler";
 import { FilterBar } from "./Filter";
+import { useLocation } from "react-router-dom";
 
 
 export const Inventory = () => {
@@ -18,16 +19,17 @@ export const Inventory = () => {
     const [inventory, setInventory] = useState([]);
     const [clients, setClients] = useState([]);
     const [collectibles, setCollectibles] = useState([]);
-    const [query, setQuery] = useState({ status: undefined, type: undefined });
+    const [query, setQuery] = useState('');
     const [boughtInventory, setBoughtInventory] = useState([]);
     const [refreshInventory, setRefreshInventory] = useState(false);
     const [pageIndex, setPageIndex] = useState(0);
-
     const MySwal = withReactContent(Swal);
+    const pageLink = useLocation();
 
     useEffect(() => {
+        const inventoryURL = `${uri}/inventory${query}`
         toast.promise(
-            getInventory(`${uri}/inventory?${query}`)
+            getInventory(inventoryURL)
                 .then(result => {
                     setInventory(result.data)
                 })
@@ -304,7 +306,7 @@ export const Inventory = () => {
                             <div className="card-header">
                                 <div className="d-flex">
                                     <div>
-                                        <button className="btn btn-secondary mr-2" onClick={e=>setRefreshInventory(true)}><i class="fas fa-sync"></i> </button>
+                                        <button className="btn btn-secondary mr-2" onClick={e => setRefreshInventory(true)}><i class="fas fa-sync"></i> </button>
                                     </div>
                                     <div className="accordion w-100" id="">
                                         <div className="card">
@@ -318,9 +320,10 @@ export const Inventory = () => {
                                                 </h2>
                                             </div>
 
-                                            <div id="filterCollapse" className="collapse">
+                                            <div id="filterCollapse" className={"collapse " + (pageLink.search !== "" ? "show" : "")}>
                                                 <div className="card-body">
-                                                    <FilterBar collectibles={collectibles} clients={clients} handleUrlQuery={(query) => setQuery(query)} />
+                                                    <FilterBar collectibles={collectibles} clients={clients} handleUrlQuery={(query) => { setQuery("?" + query) }} />
+                                                    {pageLink.search !== "" ? <small>Click <i class="fas fa-sync    "></i> to load data properly</small> : ""}
                                                 </div>
                                             </div>
                                         </div>

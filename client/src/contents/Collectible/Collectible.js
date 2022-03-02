@@ -4,6 +4,7 @@ import { Table } from "../../components/Table/Table";
 import { Add } from "./Add";
 import { getCollectibles, postCollectible, saveCollectible } from "./handler";
 import { toast } from "wc-toast";
+import { Link } from "react-router-dom";
 
 export const Collectible = () => {
     const uri = "http://localhost:3000/api";
@@ -45,8 +46,8 @@ export const Collectible = () => {
                     },
                     {
                         Header: "Action",
-                        Cell: <div className="btn-group">
-                            <button type="button" className="btn btn-sm btn-secondary"><i className="fa fa-eye" aria-hidden="true"></i></button>
+                        Cell: props => <div className="btn-group">
+                            <Link to={`/inventory/?collectible_id=${props.row.original._id}`} className="btn btn-sm btn-secondary"><i className="fa fa-eye" aria-hidden="true"></i></Link>
                             <button type="button" className="btn btn-sm btn-primary"><i className="fas fa-edit    "></i></button>
                             <button type="button" className="btn btn-sm btn-danger"><i className="fa fa-trash" aria-hidden="true"></i></button>
                         </div>

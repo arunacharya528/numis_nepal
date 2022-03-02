@@ -7,6 +7,8 @@ import { getClients, postClient, putClient } from "./handler";
 import { toast } from "wc-toast";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
+import { Link } from 'react-router-dom';
+
 
 export const Client = () => {
     const uri = "http://localhost:3000/api";
@@ -60,7 +62,7 @@ export const Client = () => {
                         Header: "Action",
                         accessor: "_id",
                         Cell: props => <div className="btn-group">
-                            <button type="button" className="btn btn-sm btn-secondary"><i className="fa fa-eye" aria-hidden="true"></i></button>
+                            <Link to={`/inventory/?client_id=${props.row.original._id}`} className="btn btn-sm btn-secondary"><i className="fa fa-eye" aria-hidden="true"></i></Link>
                             <button type="button" className="btn btn-sm btn-primary" onClick={(e) => { setEditingClient(props.row.original) }}><i className="fas fa-edit"></i></button>
                             <button type="button" className="btn btn-sm btn-danger"><i className="fa fa-trash" aria-hidden="true"></i></button>
                         </div>

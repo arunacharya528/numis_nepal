@@ -43,7 +43,6 @@ router.get("/inventory", (req, res, next) => {
     if (searchClause.length == 0) {
         searchClause = [{}];
     }
-    // console.log(searchClause);
     var query = [
         {
             '$match': {
@@ -67,7 +66,7 @@ router.get("/inventory", (req, res, next) => {
         }, {
             "$sort": { "date": -1 }
         }];
-    console.log(searchClause, query)
+
     Inventory
         .aggregate(query)
         .then(result => {
