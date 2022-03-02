@@ -16,41 +16,58 @@ router.get("/inventory", (req, res, next) => {
 
     var searchClause = [];
     if (req.query.status) {
-        searchClause = [{ 'status': req.query.status }]
+        searchClause = [...searchClause, ...[{ 'status': req.query.status }]];
     }
     if (req.query.type) {
-        searchClause = [{ 'type': req.query.type }];
+        searchClause = [...searchClause, ...[{ 'type': req.query.type }]];
     }
-    if (req.query.status && req.query.type) {
-        searchClause = [{ 'status': req.query.status }, { 'type': req.query.type }];
+    if (req.query.client_id) {
+        searchClause = [...searchClause, ...[{ 'client': new ObjectId(req.query.client_id) }]];
     }
-    if (!req.query.status && !req.query.type) {
+    if (req.query.collectible_id) {
+        searchClause = [...searchClause, ...[{ 'collectible': new ObjectId(req.query.collectible_id) }]];
+    }
 
+
+    var dateClause = {};
+    if (req.query.from) {
+        dateClause['$gte'] = new Date(req.query.from);
+    }
+    if (req.query.to) {
+        dateClause['$lte'] = new Date(req.query.to);
+    }
+    if (dateClause['$gte'] || dateClause['$lte']) {
+        searchClause = [...searchClause, ...[{ 'date': dateClause }]]
+    }
+
+    if (searchClause.length == 0) {
         searchClause = [{}];
     }
-    var query = [{
-        '$lookup': {
-            'from': 'clients',
-            'localField': 'client',
-            'foreignField': '_id',
-            'as': 'client'
-        }
-    }, {
-        '$lookup': {
-            'from': 'collectibles',
-            'localField': 'collectible',
-            'foreignField': '_id',
-            'as': 'collectible'
-        }
-    }, {
-        '$match': {
-            "$and": searchClause
-        }
-    }, {
-        "$sort": { "date": -1 }
-    }];
-
-
+    // console.log(searchClause);
+    var query = [
+        {
+            '$match': {
+                "$and": searchClause
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'clients',
+                'localField': 'client',
+                'foreignField': '_id',
+                'as': 'client'
+            }
+        }, {
+            '$lookup': {
+                'from': 'collectibles',
+                'localField': 'collectible',
+                'foreignField': '_id',
+                'as': 'collectible'
+            }
+        }, {
+            "$sort": { "date": -1 }
+        }];
+    console.log(searchClause, query)
     Inventory
         .aggregate(query)
         .then(result => {
