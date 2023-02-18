@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,7 @@ Route::group(['middleware' => 'auth', 'as' => 'admin.', 'prefix' => 'admin'], fu
     Route::group(['prefix' => "order-management"], function () {
         Route::resource('orders', OrderController::class);
         Route::resource('order-status', OrderStatusController::class);
+        Route::resource('order-item', OrderItemController::class);
     });
 
     ROute::post("logout", [AuthController::class, 'logout'])->name('logout');

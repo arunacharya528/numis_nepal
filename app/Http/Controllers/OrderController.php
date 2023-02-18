@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use App\Models\Product;
 use App\Models\Receiver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -60,7 +61,8 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return view('pages.admin.order.show', compact('order'));
+        $products = Product::pluck('name', 'id');
+        return view('pages.admin.orderItem.create', compact('order', 'products'));
     }
 
     /**

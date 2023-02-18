@@ -47,7 +47,8 @@ return [
             'contact' => "Contact",
             'contact_helper' => "Enter contact detail of the receiver",
             'status' => "Status",
-            'status_helper' => "Select status of order"
+            'status_helper' => "Select status of order",
+            'ordered_at' => "Ordered At"
         ]
     ],
     'orderStatus' => [
@@ -56,6 +57,18 @@ return [
         'fields' => [
             'title' => "Title",
             'title_helper' => "Enter title of order status"
+        ]
+    ],
+    'orderItems' => [
+        'title' => "Order Items",
+        'title_singular' => "Order Item",
+        'fields' => [
+            'product_id' => "Product",
+            'product_id_helper' => "Select a product",
+            'quantity' => "Quantity",
+            'quantity_helper' => "Enter quantity of order",
+            'discount_percent' => "Discount percent",
+            'discount_percent_helper' => "Enter discount percent that you are willing to offer"
         ]
     ]
 ];

@@ -14,5 +14,8 @@ return [
     'submit' => "Submit",
     'trashed' => "Trashed",
     'force_delete' => "Force Delete",
-    'restore' => "Restore"
+    'restore' => "Restore",
+    'created_at' => "Created At",
+    'updated_at' => "Updated At",
+    'save' => "Save"
 ];
