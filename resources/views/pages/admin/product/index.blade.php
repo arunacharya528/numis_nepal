@@ -2,6 +2,10 @@
 
 @section('title', trans('cruds.product.title') . ' ' . trans('global.list'))
 @section('content')
+    <div class="mb-2">
+        <a href="{{ route('admin.products.create') }}" class="btn btn-primary">{{ trans('global.create') }}
+            {{ trans('cruds.product.title_singular') }}</a>
+    </div>
     <div class="card border-0">
         <div class="card-body">
             <div class="table-responsive">
@@ -23,8 +27,8 @@
                                         class="btn btn-sm btn-primary">{{ trans('global.edit') }}</a>
 
                                     <form action="{{ route('admin.products.destroy', $product) }}" style="display: inline"
-                                        method="POST" onsubmit="return confirm({{ trans('global.are_you_sure') }})">
-                                        @method('PUT')
+                                        method="POST" onsubmit="return confirm(`{{ trans('global.are_you_sure') }}`)">
+                                        @method('DELETE')
                                         @csrf
                                         <button class="btn btn-sm btn-danger">{{ trans('global.delete') }}</button>
                                     </form>

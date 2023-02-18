@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group mb-3">
     <label class="{{ isset($required) && $required ? 'required' : '' }}" for="username">
         {{ $label }}
     </label>
@@ -13,6 +13,6 @@
     @enderror
 
     @isset($helper)
-        <span class="help-block">{{ $helper }}</span>
+        <small>{{ $helper }}</small>
     @endisset
 </div>

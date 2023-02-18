@@ -5,7 +5,7 @@ return [
         'title_singular' => "dashboard"
     ],
     'productManagement' => [
-        'title' => "Product Manageent",
+        'title' => "Product Management",
         'title_singular' => "Product Management",
     ],
     'product' => [

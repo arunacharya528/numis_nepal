@@ -29,7 +29,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ $hasSubMenu && $isPartOfRoute ? '' : 'collapsed' }}"
                     href="{{ $hasSubMenu && !isset($item['link']) ? '#' : $item['link'] }}"
-                    @if ($hasSubMenu) data-bs-target="#nav{{ $loop->index }}" data-bs-toggle="collapse"  @endif>
+                    @if ($hasSubMenu) data-bs-target="#nav{{ $loop->index }}" data-bs-toggle="collapse" @endif>
                     <i class="bi bi-grid"></i>
                     <span>{{ $item['name'] }}</span>
 
@@ -42,8 +42,11 @@
                     <ul id="nav{{ $loop->index }}" class="nav-content collapse {{ $isPartOfRoute ? 'show' : '' }}"
                         data-bs-parent="#sidebar-nav">
                         @foreach ($item['subMenu'] as $subMenuItem)
+                            @php
+                                $matchesRoute = url()->current() === $subMenuItem['link'];
+                            @endphp
                             <li>
-                                <a href="{{ $subMenuItem['link'] }}">
+                                <a href="{{ $subMenuItem['link'] }}" class="text-decoration-none {{ $matchesRoute ? 'active' : '' }}">
                                     <i class="bi bi-circle"></i><span>{{ $subMenuItem['name'] }}</span>
                                 </a>
                             </li>
