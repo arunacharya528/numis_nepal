@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +21,7 @@ Route::post("login", [AuthController::class, 'login'])->name('login');
 Route::group(['middleware' => 'auth', 'as' => 'admin.', 'prefix' => 'admin'], function () {
 
     Route::view('dashboard', 'pages.admin.dashboard')->name('dashboard');
+    Route::resource('products', ProductController::class);
 
     ROute::post("logout", [AuthController::class, 'logout'])->name('logout');
 });

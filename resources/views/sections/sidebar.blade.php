@@ -1,12 +1,35 @@
+@php
+    $sideBar = [
+        [
+            'generalRoute' => 'admin/dashboard',
+            'name' => trans('cruds.dashboard.title'),
+            'icon' => 'bi-menu-button-wide',
+            'link' => route('admin.dashboard'),
+        ],
+        [
+            'generalRoute' => 'admin/products*',
+            'name' => trans('cruds.productManagement.title'),
+            'icon' => 'bi-menu-button-wide',
+            'subMenu' => [
+                [
+                    'name' => trans('cruds.product.title'),
+                    'link' => route('admin.products.index'),
+                ],
+            ],
+        ],
+    ];
+@endphp
 <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
-        @foreach (config('sidebar') as $item)
+        @foreach ($sideBar as $item)
             @php
                 $hasSubMenu = isset($item['subMenu']);
+                $isPartOfRoute = request()->is($item['generalRoute']);
             @endphp
             <li class="nav-item">
-                <a class="nav-link {{ $hasSubMenu ? 'collapsed' : '' }}" href="{{ $item['link'] }}"
-                    @if ($hasSubMenu) data-bs-target="#nav{{ $loop->index }}" data-bs-toggle="collapse" @endif>
+                <a class="nav-link {{ $hasSubMenu && $isPartOfRoute ? '' : 'collapsed' }}"
+                    href="{{ $hasSubMenu && !isset($item['link']) ? '#' : $item['link'] }}"
+                    @if ($hasSubMenu) data-bs-target="#nav{{ $loop->index }}" data-bs-toggle="collapse"  @endif>
                     <i class="bi bi-grid"></i>
                     <span>{{ $item['name'] }}</span>
 
@@ -16,7 +39,8 @@
                 </a>
 
                 @if ($hasSubMenu)
-                    <ul id="nav{{ $loop->index }}" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <ul id="nav{{ $loop->index }}" class="nav-content collapse {{ $isPartOfRoute ? 'show' : '' }}"
+                        data-bs-parent="#sidebar-nav">
                         @foreach ($item['subMenu'] as $subMenuItem)
                             <li>
                                 <a href="{{ $subMenuItem['link'] }}">
