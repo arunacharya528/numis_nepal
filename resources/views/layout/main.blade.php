@@ -64,10 +64,14 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <i class="bi bi-box-arrow-right"></i>
-                                <span>Sign Out</span>
-                            </a>
+                            <form action="{{ route('admin.logout') }}" method="POST">
+                                @csrf
+                                <button class="dropdown-item d-flex align-items-center">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Sign Out</span>
+                                </button>
+                            </form>
+
                         </li>
 
                     </ul><!-- End Profile Dropdown Items -->
@@ -81,6 +85,7 @@
     @include('sections..sidebar')
 
     <main id="main" class="main">
+        @include('sections.alert')
 
         @include('sections.header')
 

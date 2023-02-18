@@ -1258,3 +1258,19 @@
     font-size: 13px;
     color: #012970;
   }
+
+
+  .alert{
+    animation: autoHide 0s ease-in 5s;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes autoHide{
+    to {
+        visibility: hidden;
+        display: none;
+        width: 0;
+        height: 0;
+        padding: 0;
+      }
+  }

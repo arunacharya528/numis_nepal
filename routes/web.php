@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('pages.admin.dashboard');
+Route::view("", 'pages.login')->name('home');
+Route::post("login", [AuthController::class, 'login'])->name('login');
+
+Route::group(['middleware' => 'auth', 'as' => 'admin.', 'prefix' => 'admin'], function () {
+
+    Route::view('dashboard', 'pages.admin.dashboard')->name('dashboard');
+
+    ROute::post("logout", [AuthController::class, 'logout'])->name('logout');
 });
