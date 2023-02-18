@@ -8,6 +8,10 @@
                 @csrf
                 <x-form.text-input :label="trans('cruds.product.fields.name')" :helper="trans('cruds.product.fields.name_helper')" name="name" required />
 
+                <x-form.text-input type="number" :label="trans('cruds.product.fields.quantity')" :helper="trans('cruds.product.fields.quantity_helper')" name="quantity" required />
+
+                <x-form.text-input type="number" :label="trans('cruds.product.fields.price')" :helper="trans('cruds.product.fields.price_helper')" name="price" required />
+
                 <x-form.text-area :label="trans('cruds.product.fields.description')" :helper="trans('cruds.product.fields.description_helper')" name="description" required />
 
                 <button class="btn btn-primary">{{ trans('global.create') }}</button>

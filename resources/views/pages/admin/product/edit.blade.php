@@ -4,12 +4,18 @@
 @section('content')
     <div class="card border-0">
         <div class="card-body">
-            <form action="{{ route('admin.products.update',$product) }}" method="POST">
-                @method("PUT")
+            <form action="{{ route('admin.products.update', $product) }}" method="POST">
+                @method('PUT')
                 @csrf
                 <x-form.text-input :label="trans('cruds.product.fields.name')" :helper="trans('cruds.product.fields.name_helper')" name="name" :value="$product->name" required />
 
-                <x-form.text-area :label="trans('cruds.product.fields.description')" :helper="trans('cruds.product.fields.description_helper')" name="description" :value="$product->description" required />
+                <x-form.text-input type="number" :label="trans('cruds.product.fields.quantity')" :helper="trans('cruds.product.fields.quantity_helper')" :value="$product->quantity" name="quantity"
+                    required />
+
+                <x-form.text-input type="number" :label="trans('cruds.product.fields.price')" :helper="trans('cruds.product.fields.price_helper')" :value="$product->price" name="price"
+                    required />
+
+                <x-form.text-area :label="trans('cruds.product.fields.description')" :helper="trans('cruds.product.fields.description_helper')" :value="$product->description" name="description" required />
 
                 <button class="btn btn-primary">{{ trans('global.update') }}</button>
             </form>
