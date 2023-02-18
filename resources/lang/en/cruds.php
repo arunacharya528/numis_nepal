@@ -42,6 +42,8 @@ return [
         'fields' => [
             'receiver' => "Receiver",
             'receiver_helper' => "Enter name of the person who will receive product.",
+            'receiver_id' => "Existing Receiver",
+            'receiver_id_helper' => "Select among the old receivers.",
             'contact' => "Contact",
             'contact_helper' => "Enter contact detail of the receiver",
             'status' => "Status",

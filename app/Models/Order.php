@@ -9,7 +9,15 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['receiver', 'contact', 'status'];
+    protected $fillable = ['receiver_id', 'order_status_id'];
 
+    public function receiver()
+    {
+        return $this->belongsTo(Receiver::class);
+    }
 
+    public function orderStatus()
+    {
+        return $this->belongsTo(OrderStatus::class);
+    }
 }

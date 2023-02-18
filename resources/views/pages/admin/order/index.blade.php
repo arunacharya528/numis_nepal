@@ -23,9 +23,9 @@
                         @foreach ($orders as $order)
                             <tr>
                                 <th scope="row">{{ $order->id }}</th>
-                                <td>{{ $order->receiver }}</td>
-                                <td>{{ $order->contact }}</td>
-                                <td>{{ $order->status }}</td>
+                                <td>{{ $order->receiver->name }}</td>
+                                <td>{{ $order->receiver->contact }}</td>
+                                <td>{{ $order->orderStatus->title }}</td>
                                 <th>
                                     <a href="{{ route('admin.orders.show', $order) }}"
                                         class="btn btn-sm btn-primary">{{ trans('global.view') }}</a>

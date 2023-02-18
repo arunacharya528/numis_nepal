@@ -4,9 +4,9 @@
 
 @php
     $details = [
-        trans('cruds.order.fields.receiver') => $order->receiver,
-        trans('cruds.order.fields.contact') => $order->contact,
-        trans('cruds.order.fields.status') => $order->status,
+        trans('cruds.order.fields.receiver') => $order->receiver->name,
+        trans('cruds.order.fields.contact') => $order->receiver->contact,
+        trans('cruds.order.fields.status') => $order->orderStatus->title,
     ];
 @endphp
 @section('content')

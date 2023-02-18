@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
+use App\Models\OrderStatus;
+use App\Models\Receiver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -15,7 +18,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::latest()->paginate();
+        $orders = Order::with(['receiver', 'orderStatus'])->latest()->paginate();
 
         return view("pages.admin.order.index", compact('orders'));
     }
@@ -25,7 +28,10 @@ class OrderController extends Controller
      */
     public function create()
     {
-        return view('pages.admin.order.create');
+        $receivers = Receiver::pluck('name', 'id');
+        $orderStatus = OrderStatus::pluck('title', 'id');
+
+        return view('pages.admin.order.create', compact('receivers', 'orderStatus'));
     }
 
     /**
@@ -33,7 +39,18 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        Order::create($request->all());
+        DB::transaction(function () use ($request) {
+            if (is_null($request->receiver_id)) {
+                $receiver = Receiver::firstOrCreate([
+                    'contact' => $request->contact,
+                    'name' => $request->name
+                ]);
+                $request['receiver_id'] = $receiver->id;
+            }
+
+            Order::create($request->all());
+        });
+
 
         return redirect()->route('admin.orders.index')->with('success', 'Successfully created order');
     }
@@ -43,7 +60,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return view('pages.admin.order.show',compact('order'));
+        return view('pages.admin.order.show', compact('order'));
     }
 
     /**

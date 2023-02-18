@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\OrderStatus;
+use App\Models\Receiver;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,9 +19,8 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'receiver' => $this->faker->name(),
-            'contact' => $this->faker->phoneNumber(),
-            'status' => $this->faker->word(),
+            'receiver_id' => $this->faker->randomElement(Receiver::pluck('id')),
+            'order_status_id' => $this->faker->randomElement(OrderStatus::pluck('id'))
         ];
     }
 }
