@@ -29,7 +29,11 @@
                 [
                     'name' => trans('cruds.order.title'),
                     'link' => route('admin.orders.index'),
-                ]
+                ],
+                [
+                    'name' => trans('cruds.orderStatus.title'),
+                    'link' => route('admin.order-status.index'),
+                ],
             ],
         ],
     ];
@@ -61,7 +65,8 @@
                                 $matchesRoute = url()->current() === $subMenuItem['link'];
                             @endphp
                             <li>
-                                <a href="{{ $subMenuItem['link'] }}" class="text-decoration-none {{ $matchesRoute ? 'active' : '' }}">
+                                <a href="{{ $subMenuItem['link'] }}"
+                                    class="text-decoration-none {{ $matchesRoute ? 'active' : '' }}">
                                     <i class="bi bi-circle"></i><span>{{ $subMenuItem['name'] }}</span>
                                 </a>
                             </li>
