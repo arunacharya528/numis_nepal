@@ -7,13 +7,17 @@
             'link' => route('admin.dashboard'),
         ],
         [
-            'generalRoute' => 'admin/products*',
+            'generalRoute' => 'admin/product-management*',
             'name' => trans('cruds.productManagement.title'),
             'icon' => 'bi-menu-button-wide',
             'subMenu' => [
                 [
                     'name' => trans('cruds.product.title'),
                     'link' => route('admin.products.index'),
+                ],
+                [
+                    'name' => trans('cruds.category.title'),
+                    'link' => route('admin.categories.index'),
                 ],
             ],
         ],
