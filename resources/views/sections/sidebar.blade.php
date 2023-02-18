@@ -21,6 +21,17 @@
                 ],
             ],
         ],
+        [
+            'generalRoute' => 'admin/order-management*',
+            'name' => trans('cruds.orderManagement.title'),
+            'icon' => 'bi-menu-button-wide',
+            'subMenu' => [
+                [
+                    'name' => trans('cruds.order.title'),
+                    'link' => route('admin.orders.index'),
+                ]
+            ],
+        ],
     ];
 @endphp
 <aside id="sidebar" class="sidebar">
