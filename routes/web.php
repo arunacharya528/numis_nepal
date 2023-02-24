@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth', 'as' => 'admin.', 'prefix' => 'admin'], fu
     });
 
     Route::group(['prefix' => "order-management"], function () {
+        Route::get("orders/{order}/download", [OrderController::class, 'download'])->name('orders.download');
         Route::resource('orders', OrderController::class);
         Route::resource('order-status', OrderStatusController::class);
         Route::resource('order-item', OrderItemController::class);

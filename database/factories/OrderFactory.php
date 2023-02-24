@@ -20,7 +20,9 @@ class OrderFactory extends Factory
     {
         return [
             'receiver_id' => $this->faker->randomElement(Receiver::pluck('id')),
-            'order_status_id' => $this->faker->randomElement(OrderStatus::pluck('id'))
+            'order_status_id' => $this->faker->randomElement(OrderStatus::pluck('id')),
+            'sub_total' => random_int(1000, 5000),
+            'discount' => random_int(500, 1000)
         ];
     }
 }

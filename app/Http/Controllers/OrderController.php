@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrderRequest;
+use App\Http\Trait\Price;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\Product;
@@ -11,9 +12,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use \Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
+    use Price;
     /**
      * Display a listing of the resource.
      */
@@ -87,5 +90,28 @@ class OrderController extends Controller
     public function destroy(Order $order): RedirectResponse
     {
         //
+    }
+
+    public function download(Order $order)
+    {
+        $pdf = Pdf::loadView('pdf.order', ['order' => $order]);
+        return $pdf->download('invoice.pdf');
+    }
+
+    public function calculatePrice($order_id)
+    {
+        $order = Order::with(['orderItems.product'])->find($order_id);
+        foreach ($order->orderItems as $item) {
+            $item->amount = $this->calculateTotal($item->quantity, $item->product->price, $item->discount_percent);
+            $item->save();
+        }
+
+        $order = Order::find($order_id);
+        $order->sub_total = $order->orderItems->sum('amount');
+        $order->discount =  $order->orderItems->map(function ($item) {
+            return $this->discountedPrice($item->product->price, $item->discount_percent) * $item->quantity;
+        })->sum();
+
+        $order->save();
     }
 }

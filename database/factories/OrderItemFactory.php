@@ -23,6 +23,7 @@ class OrderItemFactory extends Factory
             'order_id' => $this->faker->randomElement(Order::pluck('id')),
             'quantity' => $this->faker->randomElement([5, 10, 50, 20]),
             'discount_percent' => random_int(0, 10),
+            'amount' => random_int(200, 500)
         ];
     }
 }

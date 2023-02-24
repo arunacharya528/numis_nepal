@@ -1,12 +1,15 @@
+@inject('Price', '\App\Http\Controllers\OrderController')
 @extends('layout.main')
 
 @section('title', trans('cruds.order.title_singular') . ' ' . trans('global.view'))
 
 @php
     $details = [
+        'Invoice No' => $order->id,
         trans('cruds.order.fields.receiver') => $order->receiver->name,
         trans('cruds.order.fields.contact') => $order->receiver->contact,
         trans('cruds.order.fields.status') => $order->orderStatus->title,
+        '-' => '-',
         trans('cruds.order.fields.ordered_at') => $order->ordered_at,
         trans('global.updated_at') => $order->updated_at,
     ];
@@ -24,6 +27,7 @@
                     </div>
                 </div>
             @endforeach
+            <a href="{{ route('admin.orders.download', $order) }}" class="btn btn-primary">Download PDF</a>
         </div>
     </div>
 
@@ -34,8 +38,10 @@
                     <thead>
                         <tr>
                             <th scope="col">{{ trans('cruds.orderItems.fields.product_id') }}</th>
+                            <th scope="col">{{ trans('cruds.product.fields.price') }}</th>
                             <th scope="col">{{ trans('cruds.orderItems.fields.quantity') }}</th>
-                            <th scope="col">{{ trans('cruds.orderItems.fields.discount_percent') }}</th>
+                            <th scope="col">Discount</th>
+                            <th scope="col">{{ trans('cruds.orderItems.fields.amount') }}</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -43,15 +49,20 @@
                         @foreach ($order->orderItems as $item)
                             <tr>
                                 <td>{{ $item->product->name }}</td>
+                                <td>{{ $item->product->price }}</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->discount_percent }}</td>
+                                <td>{{ $Price->discountedPrice($item->product->price, $item->discount_percent) * $item->quantity }}
+                                    ({{ $item->discount_percent }}%)
+                                </td>
+                                <td>{{ $item->amount }}</td>
                                 <th>
 
                                     <a href="{{ route('admin.order-item.edit', $item->id) }}"
                                         class="btn btn-sm btn-primary">{{ trans('global.edit') }}</a>
 
-                                    <form action="{{ route('admin.order-item.destroy', $item->id) }}" style="display: inline"
-                                        method="POST" onsubmit="return confirm(`{{ trans('global.are_you_sure') }}`)">
+                                    <form action="{{ route('admin.order-item.destroy', $item->id) }}"
+                                        style="display: inline" method="POST"
+                                        onsubmit="return confirm(`{{ trans('global.are_you_sure') }}`)">
                                         @method('DELETE')
                                         @csrf
                                         <button class="btn btn-sm btn-danger">{{ trans('global.delete') }}</button>
@@ -59,7 +70,14 @@
                                 </th>
                             </tr>
                         @endforeach
-
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>Total</th>
+                            <th>{{ $order->discount }}</th>
+                            <th>{{ $order->sub_total }}</th>
+                            <th></th>
+                        </tr>
                     </tbody>
                 </table>
             </div>

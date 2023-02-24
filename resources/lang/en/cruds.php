@@ -48,7 +48,10 @@ return [
             'contact_helper' => "Enter contact detail of the receiver",
             'status' => "Status",
             'status_helper' => "Select status of order",
-            'ordered_at' => "Ordered At"
+            'ordered_at' => "Ordered At",
+            'sub_total' => "Sub Total",
+            'discount' => "Discount",
+            'total' => "Total"
         ]
     ],
     'orderStatus' => [
@@ -68,7 +71,8 @@ return [
             'quantity' => "Quantity",
             'quantity_helper' => "Enter quantity of order",
             'discount_percent' => "Discount percent",
-            'discount_percent_helper' => "Enter discount percent that you are willing to offer"
+            'discount_percent_helper' => "Enter discount percent that you are willing to offer",
+            'amount' => "Amount"
         ]
     ]
 ];
