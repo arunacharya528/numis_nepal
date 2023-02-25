@@ -71,25 +71,31 @@ class OrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Order $order): Response
+    public function edit(Order $order)
     {
-        //
+        $orderStatus = OrderStatus::pluck('title', 'id');
+
+        return view('pages.admin.order.edit',compact('order','orderStatus'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Order $order): RedirectResponse
+    public function update(Request $request, Order $order)
     {
-        //
+        $order->update($request->all());
+
+        return redirect()->route('admin.orders.index')->with('success','Successfully updated order');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Order $order): RedirectResponse
+    public function destroy(Order $order)
     {
-        //
+        $order->delete();
+
+        return redirect()->route('admin.orders.index')->with('success','Successfully deleted order');
     }
 
     public function download(Order $order)

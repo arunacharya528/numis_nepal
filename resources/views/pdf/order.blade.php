@@ -89,7 +89,6 @@
                 <td class="align-right">{{ config('numisNepal.currency') }}{{ $item->product->price }}</td>
                 <td class="align-right">
                     {{ config('numisNepal.currency') }}{{ $Price->discountedPrice($item->product->price, $item->discount_percent) * $item->quantity }}
-                    ({{ $item->discount_percent }}%)
                 </td>
                 <td class="align-right">{{ config('numisNepal.currency') }}{{ $item->amount }}</td>
             </tr>
@@ -100,7 +99,7 @@
             <td></td>
             <td class="align-right">Total</td>
             <td class="align-right">{{ config('numisNepal.currency') }}{{ $order->discount }}</td>
-            <td class="align-right">{{ config('numisNepal.currency') }}{{ $order->sub_total - $order->discount }}</td>
+            <td class="align-right">{{ config('numisNepal.currency') }}{{ $order->sub_total + $order->discount }}</td>
         </tr>
     </tbody>
 </table>
@@ -112,7 +111,7 @@
     <div style="float: right; width: 50%">
         <div class="summary">
             <span style="display: inline;">Sub Total</span>
-            <span style="display: inline;float: right;">{{ config('numisNepal.currency') }}{{ $order->sub_total - $order->discount }}</span>
+            <span style="display: inline;float: right;">{{ config('numisNepal.currency') }}{{ $order->sub_total + $order->discount }}</span>
         </div>
         <div class="summary">
             <span style="display: inline;">Discount</span>
