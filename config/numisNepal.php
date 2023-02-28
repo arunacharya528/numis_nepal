@@ -1,5 +1,12 @@
 <?php
 
 return [
-    'currency' => "Rs."
+    'currency' => "Rs.",
+    'redirect' => [
+        'cat-map' => [
+            'name' => 'cat-map',
+            'namespace' => 'admin.categories.index',
+            'queryParams' => ['map' => true]
+        ]
+    ]
 ];

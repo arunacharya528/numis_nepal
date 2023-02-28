@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'add'=>"Add",
     'list' => "List",
     'view' => "View",
     'create' => "Create",
