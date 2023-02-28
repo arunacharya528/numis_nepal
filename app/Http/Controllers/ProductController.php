@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
+use App\Models\Theme;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -24,7 +26,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('pages.admin.product.create');
+        $themes = Theme::pluck('title', 'id');
+
+        return view('pages.admin.product.create', compact('themes'));
     }
 
     /**
@@ -32,7 +36,12 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        Product::create($request->all());
+        DB::transaction(function () use ($request) {
+
+            $product = Product::create($request->all());
+
+            $this->saveTheme($product, $this->getTheme($request));
+        });
 
         return redirect()->route('admin.products.index')->with('success', 'Successfully created product');
     }
@@ -50,7 +59,9 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('pages.admin.product.edit', compact('product'));
+        $themes = Theme::pluck('title', 'id');
+
+        return view('pages.admin.product.edit', compact('product','themes'));
     }
 
     /**
@@ -58,7 +69,13 @@ class ProductController extends Controller
      */
     public function update(StoreProductRequest $request, Product $product)
     {
-        $product->update($request->all());
+        DB::transaction(function () use ($request, $product) {
+
+            $product->update($request->all());
+
+            $this->saveTheme($product, $this->getTheme($request));
+        });
+
         return redirect()->route('admin.products.index')->with('success', 'Successfully updated product');
     }
 
@@ -69,5 +86,33 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Successfully deleted product');
+    }
+
+    public function getTheme(Request $request)
+    {
+        $existingThemes = collect($request->themes)->filter(function ($value) {
+            return ctype_digit($value);
+        });
+
+        $newThemes = collect($request->themes)->diff($existingThemes);
+
+        return (object)compact('existingThemes', 'newThemes');
+    }
+
+    public function saveTheme(Product $product, Object $theme)
+    {
+        $product->themes()->sync($theme->existingThemes);
+
+        foreach ($theme->newThemes as $theme) {
+
+            $theme = $product->themes()->firstOrCreate([
+                'title' => $theme
+            ]);
+
+            $product->productTheme()->firstOrCreate([
+                'product_id' => $product->id,
+                'theme_id' => $theme->id
+            ]);
+        }
     }
 }

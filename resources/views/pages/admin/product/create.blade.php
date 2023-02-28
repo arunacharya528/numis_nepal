@@ -14,6 +14,8 @@
 
                 <x-form.text-area :label="trans('cruds.product.fields.description')" :helper="trans('cruds.product.fields.description_helper')" name="description" required />
 
+                <x-form.select2-input :label="trans('cruds.product.fields.theme')" :helper="trans('cruds.product.fields.theme_helper')" name="themes" :options="$themes" multiple required createOnGo/>
+
                 <button class="btn btn-primary">{{ trans('global.create') }}</button>
             </form>
         </div>

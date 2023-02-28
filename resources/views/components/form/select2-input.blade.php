@@ -3,11 +3,12 @@
         for="{{ $name }}">{{ $label }}</label>
     @isset($multiple)
         <div style="padding-bottom: 4px">
-            <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-            <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
+            <span class="btn btn-info btn-sm select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
+            <span class="btn btn-info btn-sm deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
         </div>
     @endisset
-    <select class="form-control select2 {{ $errors->has($name) ? 'is-invalid' : '' }}"
+    <select
+        class="form-control select2 {{ $errors->has($name) ? 'is-invalid' : '' }} {{ isset($createOnGo) ? 'create-on-go' : '' }}"
         name="{{ $name }}{{ isset($multiple) ? '[]' : '' }}" id="{{ $name }}"
         {{ isset($multiple) ? 'multiple' : '' }} {{ isset($disabled) && $disabled ? 'disabled' : '' }}>
 
@@ -21,11 +22,11 @@
                 $keyIsInProvidedValue = $isMultiple && isset($value) && gettype($value) === 'array' && in_array($key, $value);
 
                 $isNotMultiple = !$isMultiple;
-                $keyIsOldValue = $isNotMultiple && old($name) === (string)$key;
+                $keyIsOldValue = $isNotMultiple && old($name) === (string) $key;
                 $keyIsProvidedValue = $isNotMultiple && isset($value) && $value === $key;
             @endphp
             <option value="{{ $key }}"
-                {{ ($keyIsInHistory || $keyIsInProvidedValue) || ($keyIsOldValue || $keyIsProvidedValue) ? 'selected' : '' }}>
+                {{ $keyIsInHistory || $keyIsInProvidedValue || ($keyIsOldValue || $keyIsProvidedValue) ? 'selected' : '' }}>
                 {{ $option }}
             </option>
         @endforeach

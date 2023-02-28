@@ -19,7 +19,9 @@ return [
             'quantity' => "Quantity",
             'quantity_helper' => "Enter available quantity of product.",
             'price' => "Price",
-            'price_helper' => "Enter selling price of product."
+            'price_helper' => "Enter selling price of product.",
+            'theme'=>"Theme",
+            'theme_helper'=>"Select as many theme of this product as you like."
         ]
     ],
     'category' => [

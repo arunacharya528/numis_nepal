@@ -18,5 +18,7 @@ return [
     'restore' => "Restore",
     'created_at' => "Created At",
     'updated_at' => "Updated At",
-    'save' => "Save"
+    'save' => "Save",
+    'select_all'=>"Select all",
+    'deselect_all'=>"Deselect all"
 ];

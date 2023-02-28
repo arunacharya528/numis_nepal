@@ -10,4 +10,14 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'description', 'quantity', 'price'];
+
+    public function productTheme()
+    {
+        return $this->hasMany(ProductTheme::class, 'product_id');
+    }
+
+    public function themes()
+    {
+        return $this->belongsToMany(Theme::class,'product_themes');
+    }
 }
