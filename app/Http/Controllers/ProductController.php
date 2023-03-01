@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Theme;
 use Illuminate\Http\RedirectResponse;
@@ -28,7 +29,9 @@ class ProductController extends Controller
     {
         $themes = Theme::pluck('title', 'id');
 
-        return view('pages.admin.product.create', compact('themes'));
+        $categories = Category::select('id','name')->pluck('name','id');
+
+        return view('pages.admin.product.create', compact('themes','categories'));
     }
 
     /**
@@ -61,7 +64,9 @@ class ProductController extends Controller
     {
         $themes = Theme::pluck('title', 'id');
 
-        return view('pages.admin.product.edit', compact('product','themes'));
+        $categories = Category::select('id','name')->pluck('name','id');
+
+        return view('pages.admin.product.edit', compact('product','themes','categories'));
     }
 
     /**

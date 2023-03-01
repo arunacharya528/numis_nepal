@@ -23,7 +23,9 @@ return [
             'theme' => "Theme",
             'theme_helper' => "Select as many theme of this product as you like.",
             'quality' => "Quality",
-            'quality_helper' => "Select quality of the product"
+            'quality_helper' => "Select quality of the product",
+            'category' => "Category",
+            'category_helper' => "Select category of this product"
         ]
     ],
     'category' => [

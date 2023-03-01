@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'quantity', 'price','quality'];
+    protected $fillable = ['name', 'description', 'quantity', 'price','quality','category_id'];
 
     const QUALITY  = [
         'UNC' => "UNC",

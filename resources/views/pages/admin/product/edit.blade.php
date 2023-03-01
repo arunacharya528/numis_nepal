@@ -15,6 +15,8 @@
                 <x-form.text-input type="number" :label="trans('cruds.product.fields.price')" :helper="trans('cruds.product.fields.price_helper')" :value="$product->price" name="price"
                     required />
 
+                <x-form.select2-input :label="trans('cruds.product.fields.category')" :helper="trans('cruds.product.fields.category_helper')" name="category_id" :options="$categories" placeholder="None" :value="$product->category_id" required/>
+
                 <x-form.text-area :label="trans('cruds.product.fields.description')" :helper="trans('cruds.product.fields.description_helper')" :value="$product->description" name="description" required />
 
                 <x-form.select2-input :label="trans('cruds.product.fields.theme')" :helper="trans('cruds.product.fields.theme_helper')" name="themes" :options="$themes" multiple required createOnGo :value="$product->themes->pluck('id')->toArray()"/>
