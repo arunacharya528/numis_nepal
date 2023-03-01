@@ -9,7 +9,17 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'quantity', 'price'];
+    protected $fillable = ['name', 'description', 'quantity', 'price','quality'];
+
+    const QUALITY  = [
+        'UNC' => "UNC",
+        'aUNC' => "aUNC",
+        'XF+' => "XF+",
+        'XF' => "XF",
+        'F' => "F",
+        'Used' => "Used",
+        'Poor' => "Poor",
+    ];
 
     public function productTheme()
     {
@@ -18,6 +28,6 @@ class Product extends Model
 
     public function themes()
     {
-        return $this->belongsToMany(Theme::class,'product_themes');
+        return $this->belongsToMany(Theme::class, 'product_themes');
     }
 }

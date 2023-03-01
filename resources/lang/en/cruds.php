@@ -21,7 +21,9 @@ return [
             'price' => "Price",
             'price_helper' => "Enter selling price of product.",
             'theme'=>"Theme",
-            'theme_helper'=>"Select as many theme of this product as you like."
+            'theme_helper'=>"Select as many theme of this product as you like.",
+            'quality'=>"Quality",
+            'quality_helper'=>"Select quality of the product"
         ]
     ],
     'category' => [

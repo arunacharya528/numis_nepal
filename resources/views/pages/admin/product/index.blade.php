@@ -15,6 +15,7 @@
                             <th scope="col">#</th>
                             <th scope="col">{{ trans('cruds.product.fields.name') }}</th>
                             <th scope="col">{{ trans('cruds.product.fields.quantity') }}</th>
+                            <th scope="col">{{ trans('cruds.product.fields.quality') }}</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -24,6 +25,7 @@
                                 <th scope="row">{{ $product->id }}</th>
                                 <td>{{ $product->name }}</td>
                                 <td>{{ $product->quantity }}</td>
+                                <td>{{ \App\Models\Product::QUALITY[$product->quality] }}</td>
                                 <th>
                                     <a href="{{ route('admin.products.edit', $product) }}"
                                         class="btn btn-sm btn-primary">{{ trans('global.edit') }}</a>

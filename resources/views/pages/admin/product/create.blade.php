@@ -16,6 +16,8 @@
 
                 <x-form.select2-input :label="trans('cruds.product.fields.theme')" :helper="trans('cruds.product.fields.theme_helper')" name="themes" :options="$themes" multiple required createOnGo/>
 
+                <x-form.select2-input :label="trans('cruds.product.fields.quality')" :helper="trans('cruds.product.fields.quality_helper')" name="quality" :options="\App\Models\Product::QUALITY" required/>
+
                 <button class="btn btn-primary">{{ trans('global.create') }}</button>
             </form>
         </div>

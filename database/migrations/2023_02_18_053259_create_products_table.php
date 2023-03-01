@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('quantity');
             $table->integer('price');
+            $table->string('quality');
             $table->timestamps();
         });
     }

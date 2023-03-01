@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,8 @@ class ProductFactory extends Factory
             'name' => $this->faker->sentence(),
             'description' => $this->faker->words(200, true),
             'quantity' => random_int(1, 100),
-            'price' => $this->faker->randomElement([300, 500, 800, 1100])
+            'price' => $this->faker->randomElement([300, 500, 800, 1100]),
+            'quality'=>$this->faker->randomElement(Product::QUALITY)
         ];
     }
 }
