@@ -6,10 +6,8 @@
         <div class="card-body">
             <form action="{{ route('admin.categories.store') }}" method="POST">
                 @csrf
-
-                @if (request()->has('redirect'))
-                    <input type="hidden" name="redirect" value="{{ request('redirect') }}" />
-                @endif
+                
+                <x-redirect/>
 
                 <x-form.text-input :label="trans('cruds.category.fields.name')" :helper="trans('cruds.category.fields.name_helper')" name="name" required />
 

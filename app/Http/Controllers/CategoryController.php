@@ -88,9 +88,4 @@ class CategoryController extends Controller
         return redirect($route)->with('success', "Successfully deleted category");
     }
 
-
-    public function getRedirectionLink($defaultLink, Request $request)
-    {
-        return $request->has('redirect') ? route(config("numisNepal.redirect." . $request->redirect . ".namespace"), config("numisNepal.redirect." . $request->redirect . ".queryParams")) : $defaultLink;
-    }
 }

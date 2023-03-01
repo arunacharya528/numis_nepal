@@ -78,7 +78,7 @@ class OrderController extends Controller
     {
         $orderStatus = OrderStatus::pluck('title', 'id');
 
-        return view('pages.admin.order.edit',compact('order','orderStatus'));
+        return view('pages.admin.order.edit', compact('order', 'orderStatus'));
     }
 
     /**
@@ -88,7 +88,7 @@ class OrderController extends Controller
     {
         $order->update($request->all());
 
-        return redirect()->route('admin.orders.index')->with('success','Successfully updated order');
+        return redirect($this->getRedirectionLink(route('admin.orders.index', $order), $request, [$order]))->with('success', 'Successfully updated order');
     }
 
     /**
@@ -98,7 +98,7 @@ class OrderController extends Controller
     {
         $order->delete();
 
-        return redirect()->route('admin.orders.index')->with('success','Successfully deleted order');
+        return redirect()->route('admin.orders.index')->with('success', 'Successfully deleted order');
     }
 
     public function download(Order $order)

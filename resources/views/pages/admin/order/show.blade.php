@@ -9,7 +9,7 @@
         trans('cruds.order.fields.receiver') => $order->receiver->name,
         trans('cruds.order.fields.contact') => $order->receiver->contact,
         trans('cruds.order.fields.status') => $order->orderStatus->title,
-        trans('cruds.order.fields.shipping_price')=>$order->shipping_price,
+        trans('cruds.order.fields.shipping_price') => $order->shipping_price,
         '-' => '-',
         trans('cruds.order.fields.ordered_at') => $order->ordered_at,
         trans('global.updated_at') => $order->updated_at,
@@ -29,6 +29,8 @@
                 </div>
             @endforeach
             <a href="{{ route('admin.orders.download', $order) }}" class="btn btn-primary">Download PDF</a>
+            <a href="{{ route('admin.orders.edit', [$order, 'redirect' => config('numisNepal.redirect.order-show.name')]) }}"
+                class="btn btn-primary">{{ trans('global.edit') }}</a>
         </div>
     </div>
 
@@ -76,7 +78,7 @@
                             <th></th>
                             <th>Total</th>
                             <th>{{ $order->discount }}</th>
-                            <th>{{ $order->sub_total }}+(S:{{$order->shipping_price}})</th>
+                            <th>{{ $order->sub_total }}+(S:{{ $order->shipping_price }})</th>
                             <th></th>
                         </tr>
                     </tbody>

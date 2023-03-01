@@ -7,6 +7,7 @@
             <form action="{{ route('admin.orders.update',$order) }}" method="POST">
                 @method("PUT")
                 @csrf
+                <x-redirect/>
 
                 <x-form.select2-input :label="trans('cruds.order.fields.status')" :helper="trans('cruds.order.fields.status_helper')" name="order_status_id" :options="$orderStatus" placeholder="Select order status" :value="$order->order_status_id" />
 
