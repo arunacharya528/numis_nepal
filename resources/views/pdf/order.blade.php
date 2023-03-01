@@ -118,8 +118,12 @@
             <span style="display: inline;float: right;">{{ config('numisNepal.currency') }}{{ $order->discount }}</span>
         </div>
         <div class="summary">
+            <span style="display: inline;">Shipping Price</span>
+            <span style="display: inline;float: right;">{{ config('numisNepal.currency') }}{{ $order->shipping_price }}</span>
+        </div>
+        <div class="summary">
             <span style="display: inline;">Total</span>
-            <span style="display: inline;float: right;">{{ config('numisNepal.currency') }}{{ $order->sub_total }}</span>
+            <span style="display: inline;float: right;">{{ config('numisNepal.currency') }}{{ $order->sub_total+$order->shipping_price }}</span>
         </div>
     </div>
 </div>

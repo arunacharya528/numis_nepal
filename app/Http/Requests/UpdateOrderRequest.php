@@ -4,8 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreOrderRequest extends FormRequest
+class UpdateOrderRequest extends FormRequest
 {
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -13,20 +14,9 @@ class StoreOrderRequest extends FormRequest
      */
     public function rules(): array
     {
-        // dd(request());
         return [
-            'name' => ['required_if:receiver_id,null'],
-            'contact' => ['required_if:receiver_id,null'],
-            'receiver_id' => ['nullable'],
             'order_status_id' => ['required'],
             'shipping_price' => ['required', 'numeric','min:0']
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'status_id.required' => 'Status is required'
         ];
     }
 }

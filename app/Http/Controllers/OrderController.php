@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Trait\Price;
 use App\Models\Order;
 use App\Models\OrderStatus;
@@ -51,6 +52,8 @@ class OrderController extends Controller
                 ]);
                 $request['receiver_id'] = $receiver->id;
             }
+            $request['sub_total'] = 0;
+            $request['discount'] = 0;
 
             Order::create($request->all());
         });
@@ -81,7 +84,7 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Order $order)
+    public function update(UpdateOrderRequest $request, Order $order)
     {
         $order->update($request->all());
 

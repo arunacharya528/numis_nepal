@@ -44,7 +44,7 @@ class OrderItemController extends Controller
             ], [
                 'order_id' => $request->order_id,
                 'quantity' => $request->quantity,
-                'discount_percent' => $request->discount_percent,
+                'discount_percent' => is_null($request->discount_percent) ? 0 : $request->discount_percent,
                 'amount' => 0
             ]);
 

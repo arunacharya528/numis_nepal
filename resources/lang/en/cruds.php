@@ -20,10 +20,10 @@ return [
             'quantity_helper' => "Enter available quantity of product.",
             'price' => "Price",
             'price_helper' => "Enter selling price of product.",
-            'theme'=>"Theme",
-            'theme_helper'=>"Select as many theme of this product as you like.",
-            'quality'=>"Quality",
-            'quality_helper'=>"Select quality of the product"
+            'theme' => "Theme",
+            'theme_helper' => "Select as many theme of this product as you like.",
+            'quality' => "Quality",
+            'quality_helper' => "Select quality of the product"
         ]
     ],
     'category' => [
@@ -55,7 +55,9 @@ return [
             'ordered_at' => "Ordered At",
             'sub_total' => "Sub Total",
             'discount' => "Discount",
-            'total' => "Total"
+            'total' => "Total",
+            'shipping_price' => "Shipping Price",
+            'shipping_price_helper' => "Enter shipping price"
         ]
     ],
     'orderStatus' => [

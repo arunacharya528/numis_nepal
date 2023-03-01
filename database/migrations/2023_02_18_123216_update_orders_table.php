@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('sub_total');
             $table->integer('discount');
             $table->timestamp('ordered_at')->useCurrent();
+            $table->integer('shipping_price')->default(0);
         });
 
         DB::statement('ALTER TABLE orders AUTO_INCREMENT = 10000;');

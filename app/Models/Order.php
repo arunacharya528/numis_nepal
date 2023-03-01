@@ -9,7 +9,9 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['receiver_id', 'order_status_id', 'sub_total', 'discount'];
+    protected $fillable = ['receiver_id', 'order_status_id', 'sub_total', 'discount','shipping_price'];
+
+    const SHIPPING_PRICE = 100;
 
     public function receiver()
     {
