@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use \Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -122,5 +123,31 @@ class OrderController extends Controller
         })->sum();
 
         $order->save();
+    }
+
+    public function reduce(Order $order)
+    {
+        foreach ($order->orderItems as $item) {
+            $item->product->quantity = $item->product->quantity - $item->quantity;
+            $item->product->save();
+        }
+
+        $order->reduced_at = Carbon::now();
+        $order->save();
+
+        return back()->with('success', "Successfully reduced ordered quantity from inventory");
+    }
+
+    public function retain(Order $order)
+    {
+        foreach ($order->orderItems as $item) {
+            $item->product->quantity = $item->product->quantity + $item->quantity;
+            $item->product->save();
+        }
+
+        $order->reduced_at = null;
+        $order->save();
+
+        return back()->with('success', "Successfully reatained ordered quantity");
     }
 }

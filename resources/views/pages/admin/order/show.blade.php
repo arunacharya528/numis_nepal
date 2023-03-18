@@ -5,7 +5,7 @@
 
 @php
     $details = [
-        'Invoice No' => $order->id,
+        'Invoice No' => $order->id . (is_null($order->reduced_at) ? '' : ' <i class="bi bi-patch-check-fill text-primary"></i>'),
         trans('cruds.order.fields.receiver') => $order->receiver->name,
         trans('cruds.order.fields.contact') => $order->receiver->contact,
         trans('cruds.order.fields.status') => $order->orderStatus->title,
@@ -24,13 +24,27 @@
                         <b>{{ $key }}</b>
                     </div>
                     <div class="col">
-                        {{ $value }}
+                        {!! $value !!}
                     </div>
                 </div>
             @endforeach
             <a href="{{ route('admin.orders.download', $order) }}" class="btn btn-primary">Download PDF</a>
             <a href="{{ route('admin.orders.edit', [$order, 'redirect' => config('numisNepal.redirect.order-show.name')]) }}"
                 class="btn btn-primary">{{ trans('global.edit') }}</a>
+
+            @if (is_null($order->reduced_at))
+                <form action="{{ route('admin.orders.reduce', $order) }}" method="POST" class="d-inline"
+                    onsubmit="return confirm(`{{ trans('global.are_you_sure') }}`)">
+                    @csrf
+                    <button class="btn btn-primary">Reduce</button>
+                </form>
+            @else
+                <form action="{{ route('admin.orders.retain', $order) }}" method="POST" class="d-inline"
+                    onsubmit="return confirm(`{{ trans('global.are_you_sure') }}`)">
+                    @csrf
+                    <button class="btn btn-primary">Retain</button>
+                </form>
+            @endif
         </div>
     </div>
 

@@ -33,6 +33,8 @@ Route::group(['middleware' => 'auth', 'as' => 'admin.', 'prefix' => 'admin'], fu
 
     Route::group(['prefix' => "order-management"], function () {
         Route::get("orders/{order}/download", [OrderController::class, 'download'])->name('orders.download');
+        Route::post("orders/{order}/reduce", [OrderController::class, 'reduce'])->name('orders.reduce');
+        Route::post("orders/{order}/retain", [OrderController::class, 'retain'])->name('orders.retain');
         Route::resource('orders', OrderController::class);
         Route::resource('order-status', OrderStatusController::class);
         Route::resource('order-item', OrderItemController::class);
