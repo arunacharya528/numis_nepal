@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         if ($request->has('map')) {
-            $categories = Category::with('subCategories')->whereNull('parent_id')->latest()->get();
+            $categories = Category::withCount('products')->with('subCategories')->whereNull('parent_id')->latest()->get();
         } else {
             $categories = Category::latest()->get();
         }
@@ -87,5 +87,4 @@ class CategoryController extends Controller
 
         return redirect($route)->with('success', "Successfully deleted category");
     }
-
 }

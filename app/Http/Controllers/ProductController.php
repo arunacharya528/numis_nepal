@@ -16,10 +16,48 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate();
-        return view('pages.admin.product.index', compact('products'));
+        $categories = Category::select('id', 'name')->pluck('name', 'id');
+
+        $themes = Theme::pluck('title', 'id');
+
+        $products = Product::with('themes')->when(
+            $request->has('filter'),
+            function ($q) use ($request) {
+
+                $isName = $request->has('name') && !is_null($request->input('name'));
+                $isTheme = $request->has('themes') && !is_null($request->input('themes'));
+
+                if ($isName) {
+                    $q->where('name', "LIKE", "%" . $request->name . "%");
+                }
+
+                if ($isTheme) {
+                    $q->whereHas(
+                        'themes',
+                        function ($q) use ($request) {
+                            $q->where(function ($q) use ($request) {
+                                foreach ($request->themes as $value) {
+                                    $q->orWhere('themes.id', $value);
+                                }
+                            });
+                        }
+                    );
+                }
+
+                $filteringColumns = ['category_id', 'quality'];
+
+                foreach ($filteringColumns as $column) {
+                    $input = $request->input($column, '');
+                    if ($request->has($column) && $input != '') {
+                        $q->where($column, $request->input($column));
+                    }
+                }
+            }
+        )->latest()->paginate();
+
+        return view('pages.admin.product.index', compact('products', 'categories', 'themes'));
     }
 
     /**
@@ -29,9 +67,9 @@ class ProductController extends Controller
     {
         $themes = Theme::pluck('title', 'id');
 
-        $categories = Category::select('id','name')->pluck('name','id');
+        $categories = Category::select('id', 'name')->pluck('name', 'id');
 
-        return view('pages.admin.product.create', compact('themes','categories'));
+        return view('pages.admin.product.create', compact('themes', 'categories'));
     }
 
     /**
@@ -64,9 +102,9 @@ class ProductController extends Controller
     {
         $themes = Theme::pluck('title', 'id');
 
-        $categories = Category::select('id','name')->pluck('name','id');
+        $categories = Category::select('id', 'name')->pluck('name', 'id');
 
-        return view('pages.admin.product.edit', compact('product','themes','categories'));
+        return view('pages.admin.product.edit', compact('product', 'themes', 'categories'));
     }
 
     /**

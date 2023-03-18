@@ -8,6 +8,7 @@
     </div>
     <div class="card border-0">
         <div class="card-body">
+            @include('pages.admin.product.filter-form')
             <div class="table-responsive">
                 <table class="table table-sm">
                     <thead>
@@ -16,6 +17,7 @@
                             <th scope="col">{{ trans('cruds.product.fields.name') }}</th>
                             <th scope="col">{{ trans('cruds.product.fields.quantity') }}</th>
                             <th scope="col">{{ trans('cruds.product.fields.quality') }}</th>
+                            <th scope="col">{{ trans('cruds.product.fields.theme') }}</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -26,6 +28,11 @@
                                 <td>{{ $product->name }}</td>
                                 <td>{{ $product->quantity }}</td>
                                 <td>{{ \App\Models\Product::QUALITY[$product->quality] }}</td>
+                                <td>
+                                    @foreach ($product->themes->pluck('title')->toArray() as $theme)
+                                        <span class="badge bg-primary">{{ $theme }}</span>
+                                    @endforeach
+                                </td>
                                 <th>
                                     <a href="{{ route('admin.products.edit', $product) }}"
                                         class="btn btn-sm btn-primary">{{ trans('global.edit') }}</a>

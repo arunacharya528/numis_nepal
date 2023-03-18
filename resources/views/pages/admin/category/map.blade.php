@@ -3,7 +3,7 @@
         <div style="margin-left: 1rem; {{ isset($isFirst) ? 'border-left:2px dotted black;' : '' }}">
             <div style="padding: 0.5rem 1rem;" class="d-flex align-items-center">
                 <div>
-                    {{ $category->name }}
+                    {{ $category->name }} --- {{$category->products_count}}
                 </div>
 
                 <div class="dropdown">
@@ -15,6 +15,10 @@
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('admin.categories.create', ['redirect' => config('numisNepal.redirect.cat-map.name'), 'parent' => $category->id]) }}"
                                 class="dropdown-item">{{ trans('global.add') }} Sub-Category</a></li>
+
+                        <li><a href="{{ route('admin.products.index', ['filter' => true, 'category_id' => $category->id]) }}"
+                                class="dropdown-item">{{ trans('global.view') }} {{ trans('cruds.product.title') }}</a>
+                        </li>
                         <li>
 
                             <a href="{{ route('admin.categories.edit', [$category, 'redirect' => config('numisNepal.redirect.cat-map.name')]) }}"

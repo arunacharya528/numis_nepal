@@ -18,6 +18,11 @@ class Category extends Model
 
     public function subCategories()
     {
-        return $this->categories()->with('subCategories');
+        return $this->categories()->with('subCategories')->withCount('products');
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'category_id');
     }
 }
