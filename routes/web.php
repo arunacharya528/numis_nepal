@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\OrderStatusController;
@@ -24,7 +25,7 @@ Route::post("login", [AuthController::class, 'login'])->name('login');
 
 Route::group(['middleware' => 'auth', 'as' => 'admin.', 'prefix' => 'admin'], function () {
 
-    Route::view('dashboard', 'pages.admin.dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::group(['prefix' => "product-management"], function () {
         Route::resource('products', ProductController::class);

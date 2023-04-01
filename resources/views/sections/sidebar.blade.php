@@ -3,13 +3,13 @@
         [
             'generalRoute' => 'admin/dashboard',
             'name' => trans('cruds.dashboard.title'),
-            'icon' => 'bi-menu-button-wide',
+            'icon' => 'bi-bar-chart-fill',
             'link' => route('admin.dashboard'),
         ],
         [
             'generalRoute' => 'admin/product-management*',
             'name' => trans('cruds.productManagement.title'),
-            'icon' => 'bi-menu-button-wide',
+            'icon' => 'bi-bookshelf',
             'subMenu' => [
                 [
                     'name' => trans('cruds.product.title'),
@@ -24,7 +24,7 @@
         [
             'generalRoute' => 'admin/order-management*',
             'name' => trans('cruds.orderManagement.title'),
-            'icon' => 'bi-menu-button-wide',
+            'icon' => 'bi-basket',
             'subMenu' => [
                 [
                     'name' => trans('cruds.order.title'),
@@ -49,7 +49,7 @@
                 <a class="nav-link {{ $hasSubMenu && $isPartOfRoute ? '' : 'collapsed' }}"
                     href="{{ $hasSubMenu && !isset($item['link']) ? '#' : $item['link'] }}"
                     @if ($hasSubMenu) data-bs-target="#nav{{ $loop->index }}" data-bs-toggle="collapse" @endif>
-                    <i class="bi bi-grid"></i>
+                    <i class="bi {{ $item['icon'] }}"></i>
                     <span>{{ $item['name'] }}</span>
 
                     @if ($hasSubMenu)
